@@ -1,0 +1,2651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sketchy — Handmade & Vintage Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ── TOKENS ──────────────────────────────────────────────────── */
+  :root {
+    --linen:      #FAF7F2; 
+    --cream:      #F0EBE3;
+    --parchment:  #E8DFD2;
+    --walnut:     #2C1810;
+    --bark:       #5C3D2E;
+    --clay:       #8B6355;
+    --sienna:     #C4622D;
+    --sienna-dk:  #A3501F;
+    --sage:       #7B9B8A;
+    --sage-lt:    #A8C4B8;
+    --ink:        #1A1209;
+    --muted:      #7A6C63;
+    --border:     #DDD4C8;
+    --shadow:     rgba(44,24,16,.08);
+    --shadow-md:  rgba(44,24,16,.14);
+    --r:          10px;
+    --r-lg:       18px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--linen);
+    color: var(--walnut);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  h1,h2,h3,h4 { font-family: 'Playfair Display', serif; }
+
+  a { color: inherit; text-decoration: none; }
+  button { cursor: pointer; font-family: inherit; border: none; }
+  input, textarea, select { font-family: inherit; }
+
+  /* ── VIEWS ───────────────────────────────────────────────────── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ── TOP NAV ─────────────────────────────────────────────────── */
+  .topbar {
+    background: var(--walnut);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 58px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    gap: 16px;
+  }
+
+  .topbar-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-style: italic;
+    color: var(--parchment);
+    white-space: nowrap;
+    cursor: pointer;
+    letter-spacing: .5px;
+  }
+  .topbar-logo span { color: var(--sienna); }
+
+  .topbar-search {
+    flex: 1;
+    max-width: 520px;
+    display: flex;
+    background: var(--linen);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: border-color .2s;
+  }
+  .topbar-search:focus-within { border-color: var(--sienna); }
+  .topbar-search input {
+    flex: 1;
+    padding: 9px 14px;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: var(--walnut);
+  }
+  .topbar-search button {
+    background: var(--sienna);
+    color: #fff;
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background .2s;
+  }
+  .topbar-search button:hover { background: var(--sienna-dk); }
+
+  .topbar-actions { display: flex; align-items: center; gap: 10px; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--parchment);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 7px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,.1); }
+
+  .btn-primary {
+    background: var(--sienna);
+    color: #fff;
+    border-radius: 7px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background .2s;
+    white-space: nowrap;
+  }
+  .btn-primary:hover { background: var(--sienna-dk); }
+
+  .cart-btn {
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 7px;
+    color: var(--parchment);
+    padding: 7px 13px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background .2s;
+  }
+  .cart-btn:hover { background: rgba(255,255,255,.18); }
+  .cart-count {
+    background: var(--sienna);
+    color: #fff;
+    border-radius: 50%;
+    min-width: 18px;
+    height: 18px;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── CATEGORY STRIP ──────────────────────────────────────────── */
+  .cat-strip {
+    background: var(--cream);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .cat-strip::-webkit-scrollbar { display: none; }
+
+  .cat-pill {
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--bark);
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    background: none;
+    transition: all .2s;
+  }
+  .cat-pill:hover { color: var(--sienna); }
+  .cat-pill.active { color: var(--sienna); border-bottom-color: var(--sienna); }
+
+  /* ── HERO ─────────────────────────────────────────────────────── */
+  .hero {
+    background: linear-gradient(135deg, #2C1810 0%, #5C3D2E 50%, #7B9B8A 100%);
+    padding: 72px 24px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 80%, rgba(196,98,45,.2) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(123,155,138,.25) 0%, transparent 50%);
+  }
+  .hero-inner { position: relative; max-width: 640px; margin: 0 auto; }
+  .hero-eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--sage-lt);
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    color: var(--parchment);
+    line-height: 1.15;
+    margin-bottom: 18px;
+    font-style: italic;
+  }
+  .hero h1 em { color: var(--sienna); font-style: normal; }
+  .hero p {
+    font-size: 16px;
+    color: rgba(240,235,227,.8);
+    max-width: 480px;
+    margin: 0 auto 32px;
+    line-height: 1.7;
+  }
+  .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-hero {
+    background: var(--sienna);
+    color: #fff;
+    border-radius: 8px;
+    padding: 13px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: background .2s, transform .15s;
+  }
+  .btn-hero:hover { background: var(--sienna-dk); transform: translateY(-1px); }
+  .btn-hero-outline {
+    background: transparent;
+    color: var(--parchment);
+    border: 2px solid rgba(240,235,227,.4);
+    border-radius: 8px;
+    padding: 13px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all .2s;
+  }
+  .btn-hero-outline:hover { border-color: var(--parchment); background: rgba(240,235,227,.1); }
+
+  /* ── SECTION ─────────────────────────────────────────────────── */
+  .section { padding: 52px 24px; max-width: 1200px; margin: 0 auto; }
+  .section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .section-header h2 { font-size: 26px; }
+  .section-header p { font-size: 14px; color: var(--muted); margin-top: 4px; }
+  .see-all {
+    font-size: 13px;
+    color: var(--sienna);
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .see-all:hover { text-decoration: underline; }
+
+  /* ── PRODUCT GRID ────────────────────────────────────────────── */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+
+  .product-card {
+    background: #fff;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    box-shadow: 0 2px 8px var(--shadow);
+    transition: transform .2s, box-shadow .2s;
+    cursor: pointer;
+    position: relative;
+  }
+  .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px var(--shadow-md); }
+
+  .product-card-img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    display: block;
+    background: var(--cream);
+    position: relative;
+    overflow: hidden;
+  }
+  .product-card-img .img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+    background: var(--parchment);
+  }
+
+  .fav-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    background: rgba(255,255,255,.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    transition: transform .15s;
+    z-index: 2;
+  }
+  .fav-btn:hover { transform: scale(1.15); }
+  .fav-btn.active { color: var(--sienna); }
+
+  .product-card-body { padding: 14px 14px 16px; }
+  .product-card-shop { font-size: 11px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+  .product-card-name { font-size: 14px; font-weight: 500; color: var(--walnut); margin-bottom: 6px; line-height: 1.4; }
+  .product-card-price { font-size: 16px; font-weight: 700; color: var(--sienna); }
+  .product-card-rating { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .stars { color: #E8A030; }
+
+  /* ── BADGE ───────────────────────────────────────────────────── */
+  .badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--walnut);
+    color: var(--parchment);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    z-index: 2;
+  }
+  .badge.sage { background: var(--sage); }
+  .badge.sienna { background: var(--sienna); }
+
+  /* ── SHOP ROW ────────────────────────────────────────────────── */
+  .shop-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .shop-card {
+    background: #fff;
+    border-radius: var(--r-lg);
+    padding: 22px;
+    box-shadow: 0 2px 8px var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: box-shadow .2s, transform .2s;
+    border: 1px solid var(--border);
+  }
+  .shop-card:hover { box-shadow: 0 6px 20px var(--shadow-md); transform: translateY(-2px); }
+  .shop-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--parchment);
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 3px solid var(--cream);
+  }
+  .shop-card-info h4 { font-size: 15px; margin-bottom: 2px; }
+  .shop-card-info p { font-size: 12px; color: var(--muted); }
+  .shop-card-info .shop-stars { font-size: 12px; color: #E8A030; }
+
+  /* ── BANNER STRIP ────────────────────────────────────────────── */
+  .promo-strip {
+    background: var(--cream);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .promo-strip-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 36px 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    text-align: center;
+  }
+  .promo-item { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .promo-icon { font-size: 32px; }
+  .promo-item h3 { font-size: 16px; }
+  .promo-item p { font-size: 13px; color: var(--muted); }
+
+  /* ── FILTER SIDEBAR + RESULTS ───────────────────────────────── */
+  .search-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    display: grid;
+    grid-template-columns: 230px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .filter-panel {
+    background: #fff;
+    border-radius: var(--r-lg);
+    padding: 20px;
+    box-shadow: 0 2px 8px var(--shadow);
+    position: sticky;
+    top: 80px;
+  }
+  .filter-panel h3 { font-size: 16px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .filter-group { margin-bottom: 20px; }
+  .filter-group label { font-size: 12px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 10px; }
+  .filter-check { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; font-size: 13px; cursor: pointer; }
+  .filter-check input { accent-color: var(--sienna); }
+  .price-row { display: flex; gap: 8px; align-items: center; }
+  .price-input {
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 13px;
+    outline: none;
+    color: var(--walnut);
+    background: var(--linen);
+  }
+  .price-input:focus { border-color: var(--sienna); }
+  .btn-apply {
+    background: var(--sienna);
+    color: #fff;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+  .results-count { font-size: 14px; color: var(--muted); }
+  .sort-select {
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 7px 12px;
+    font-size: 13px;
+    outline: none;
+    color: var(--walnut);
+    background: #fff;
+    cursor: pointer;
+  }
+
+  /* ── PRODUCT DETAIL ──────────────────────────────────────────── */
+  .detail-layout {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 36px 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .detail-imgs { position: sticky; top: 80px; }
+  .detail-main-img {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: var(--r-lg);
+    background: var(--parchment);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 96px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .detail-thumbs { display: flex; gap: 8px; }
+  .detail-thumb {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    background: var(--parchment);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color .2s;
+  }
+  .detail-thumb.active { border-color: var(--sienna); }
+
+  .detail-info h1 { font-size: 26px; margin-bottom: 8px; line-height: 1.3; }
+  .detail-shop-link { font-size: 13px; color: var(--sage); font-weight: 500; cursor: pointer; margin-bottom: 14px; display: inline-block; }
+  .detail-shop-link:hover { text-decoration: underline; }
+  .detail-price { font-size: 30px; font-weight: 700; color: var(--sienna); margin-bottom: 14px; }
+  .detail-rating { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+  .detail-rating .stars { font-size: 14px; }
+
+  .variation-group { margin-bottom: 18px; }
+  .variation-label { font-size: 13px; font-weight: 600; color: var(--bark); margin-bottom: 9px; }
+  .variation-options { display: flex; flex-wrap: wrap; gap: 8px; }
+  .variation-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    font-size: 13px;
+    cursor: pointer;
+    background: #fff;
+    transition: all .15s;
+  }
+  .variation-pill:hover { border-color: var(--sienna); color: var(--sienna); }
+  .variation-pill.active { border-color: var(--sienna); background: var(--sienna); color: #fff; }
+
+  .qty-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .qty-control { display: flex; align-items: center; gap: 0; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .qty-btn { width: 36px; height: 36px; background: var(--cream); border: none; font-size: 18px; cursor: pointer; color: var(--bark); transition: background .15s; }
+  .qty-btn:hover { background: var(--parchment); }
+  .qty-num { width: 40px; text-align: center; font-size: 14px; font-weight: 600; border: none; outline: none; background: #fff; }
+  .qty-label { font-size: 13px; color: var(--muted); }
+
+  .btn-add-cart {
+    background: var(--sienna);
+    color: #fff;
+    border-radius: 8px;
+    padding: 14px 32px;
+    font-size: 15px;
+    font-weight: 700;
+    width: 100%;
+    margin-bottom: 12px;
+    transition: background .2s;
+  }
+  .btn-add-cart:hover { background: var(--sienna-dk); }
+  .btn-fav-large {
+    background: #fff;
+    color: var(--walnut);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 32px;
+    font-size: 14px;
+    font-weight: 600;
+    width: 100%;
+    transition: all .2s;
+  }
+  .btn-fav-large:hover { border-color: var(--sienna); color: var(--sienna); }
+
+  .detail-divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+  .detail-desc h3 { font-size: 16px; margin-bottom: 10px; }
+  .detail-desc p { font-size: 14px; color: var(--bark); line-height: 1.8; }
+
+  .seller-box {
+    background: var(--linen);
+    border-radius: var(--r);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 20px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    transition: box-shadow .2s;
+  }
+  .seller-box:hover { box-shadow: 0 4px 12px var(--shadow); }
+  .seller-box-info h4 { font-size: 14px; margin-bottom: 2px; }
+  .seller-box-info p { font-size: 12px; color: var(--muted); }
+  .btn-msg {
+    margin-left: auto;
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--bark);
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .btn-msg:hover { border-color: var(--sage); color: var(--sage); }
+
+  /* ── CART PANEL ──────────────────────────────────────────────── */
+  .cart-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(28,16,8,.5);
+    z-index: 200;
+    display: none;
+    backdrop-filter: blur(2px);
+  }
+  .cart-overlay.open { display: block; }
+  .cart-panel {
+    position: fixed;
+    top: 0; right: -440px;
+    width: 420px;
+    max-width: 100vw;
+    height: 100vh;
+    background: var(--linen);
+    z-index: 201;
+    display: flex;
+    flex-direction: column;
+    transition: right .3s ease;
+    box-shadow: -8px 0 32px rgba(28,16,8,.25);
+  }
+  .cart-panel.open { right: 0; }
+  .cart-header {
+    padding: 20px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+  }
+  .cart-header h2 { font-size: 20px; }
+  .cart-close {
+    width: 32px; height: 32px;
+    background: var(--cream);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; border: none; cursor: pointer; color: var(--bark);
+    transition: background .15s;
+  }
+  .cart-close:hover { background: var(--parchment); }
+
+  .cart-items { flex: 1; overflow-y: auto; padding: 16px 22px; }
+  .cart-empty { text-align: center; padding: 60px 0; color: var(--muted); }
+  .cart-empty .cart-empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .cart-empty p { font-size: 14px; }
+
+  .cart-item {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .cart-item-img {
+    width: 64px; height: 64px;
+    border-radius: 8px;
+    background: var(--parchment);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+  }
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-size: 13px; font-weight: 500; margin-bottom: 3px; line-height: 1.4; }
+  .cart-item-shop { font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+  .cart-item-price { font-size: 14px; font-weight: 700; color: var(--sienna); }
+  .cart-item-remove { color: var(--muted); font-size: 12px; cursor: pointer; background: none; border: none; margin-top: 4px; }
+  .cart-item-remove:hover { color: var(--sienna); }
+
+  .cart-footer { padding: 18px 22px; background: #fff; border-top: 1px solid var(--border); }
+  .cart-total { display: flex; justify-content: space-between; font-size: 16px; font-weight: 600; margin-bottom: 14px; }
+  .cart-total span:last-child { color: var(--sienna); }
+  .btn-checkout {
+    background: var(--sienna);
+    color: #fff;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    width: 100%;
+    margin-bottom: 8px;
+    transition: background .2s;
+  }
+  .btn-checkout:hover { background: var(--sienna-dk); }
+  .cart-footer-note { font-size: 11px; color: var(--muted); text-align: center; }
+
+  /* ── CHECKOUT VIEW ───────────────────────────────────────────── */
+  .checkout-layout {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 36px 24px;
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 28px;
+    align-items: start;
+  }
+  .checkout-form-box {
+    background: #fff;
+    border-radius: var(--r-lg);
+    padding: 28px;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  .checkout-form-box h2 { font-size: 20px; margin-bottom: 22px; }
+  .form-row { margin-bottom: 16px; }
+  .form-row label { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: .4px; text-transform: uppercase; display: block; margin-bottom: 7px; }
+  .form-input {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-size: 14px;
+    outline: none;
+    color: var(--walnut);
+    background: var(--linen);
+    transition: border-color .2s;
+  }
+  .form-input:focus { border-color: var(--sienna); }
+  .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .order-summary-box {
+    background: #fff;
+    border-radius: var(--r-lg);
+    padding: 24px;
+    box-shadow: 0 2px 8px var(--shadow);
+    position: sticky;
+    top: 80px;
+  }
+  .order-summary-box h3 { font-size: 18px; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .summary-line { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; color: var(--bark); }
+  .summary-line.total { font-size: 16px; font-weight: 700; color: var(--walnut); margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .coupon-row { display: flex; gap: 8px; margin: 16px 0; }
+  .coupon-input {
+    flex: 1;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    padding: 9px 12px;
+    font-size: 13px;
+    outline: none;
+    background: var(--linen);
+  }
+  .coupon-input:focus { border-color: var(--sienna); }
+  .btn-apply-coupon {
+    background: var(--bark);
+    color: #fff;
+    border-radius: 7px;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* ── SHOP STOREFRONT VIEW ────────────────────────────────────── */
+  .shop-banner {
+    height: 200px;
+    background: linear-gradient(120deg, #5C3D2E, #7B9B8A);
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 24px;
+  }
+  .shop-banner-meta {
+    display: flex;
+    align-items: flex-end;
+    gap: 18px;
+  }
+  .shop-banner-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--parchment);
+    font-size: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid #fff;
+    flex-shrink: 0;
+  }
+  .shop-banner-info h1 { font-size: 26px; color: #fff; margin-bottom: 4px; }
+  .shop-banner-info p { font-size: 13px; color: rgba(255,255,255,.75); }
+  .shop-banner-info .shop-banner-rating { font-size: 12px; color: #f0dbb0; margin-top: 4px; }
+
+  .shop-body { max-width: 1100px; margin: 0 auto; padding: 32px 24px; display: grid; grid-template-columns: 220px 1fr; gap: 28px; }
+  .shop-sidebar { }
+  .shop-about {
+    background: #fff;
+    border-radius: var(--r-lg);
+    padding: 20px;
+    box-shadow: 0 2px 8px var(--shadow);
+    margin-bottom: 16px;
+  }
+  .shop-about h3 { font-size: 15px; margin-bottom: 10px; }
+  .shop-about p { font-size: 13px; color: var(--bark); line-height: 1.7; }
+  .shop-policies h3 { font-size: 15px; margin-bottom: 10px; }
+  .policy-item { font-size: 12px; color: var(--muted); margin-bottom: 6px; display: flex; gap: 8px; align-items: flex-start; }
+
+  /* ── SELLER DASHBOARD ────────────────────────────────────────── */
+  .dash-layout {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 24px;
+  }
+  .dash-nav {
+    background: #fff;
+    border-radius: var(--r-lg);
+    padding: 16px;
+    box-shadow: 0 2px 8px var(--shadow);
+    height: fit-content;
+    position: sticky;
+    top: 80px;
+  }
+  .dash-nav h3 { font-size: 13px; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .dash-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 7px;
+    font-size: 13px;
+    color: var(--bark);
+    cursor: pointer;
+    transition: all .15s;
+    margin-bottom: 2px;
+  }
+  .dash-nav-item:hover { background: var(--cream); }
+  .dash-nav-item.active { background: var(--sienna); color: #fff; }
+  .dash-nav-item span { font-size: 15px; }
+
+  .dash-main { }
+  .dash-panel { display: none; }
+  .dash-panel.active { display: block; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .stat-card {
+    background: #fff;
+    border-radius: var(--r);
+    padding: 20px;
+    box-shadow: 0 2px 8px var(--shadow);
+    border-left: 4px solid var(--sienna);
+  }
+  .stat-card.sage { border-left-color: var(--sage); }
+  .stat-card.walnut { border-left-color: var(--bark); }
+  .stat-card .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); margin-bottom: 8px; }
+  .stat-card .stat-value { font-size: 28px; font-weight: 700; color: var(--walnut); font-family: 'Playfair Display', serif; }
+  .stat-card .stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  .table-card {
+    background: #fff;
+    border-radius: var(--r-lg);
+    box-shadow: 0 2px 8px var(--shadow);
+    overflow: hidden;
+  }
+  .table-card-header { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .table-card-header h3 { font-size: 16px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { padding: 12px 18px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); background: var(--linen); border-bottom: 1px solid var(--border); }
+  td { padding: 14px 18px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--linen); }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .3px;
+  }
+  .status-pill.pending { background: #FEF3CD; color: #856404; }
+  .status-pill.shipped { background: #D1FAE5; color: #065F46; }
+  .status-pill.completed { background: #DBEAFE; color: #1E40AF; }
+  .status-pill.cancelled { background: #FEE2E2; color: #B91C1C; }
+
+  /* ── AUTH MODAL ──────────────────────────────────────────────── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(28,16,8,.6);
+    z-index: 300;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(2px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: var(--r-lg);
+    padding: 36px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(28,16,8,.3);
+  }
+  .modal h2 { font-size: 24px; margin-bottom: 6px; }
+  .modal p { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+  .modal-tabs { display: flex; gap: 0; margin-bottom: 28px; border-bottom: 2px solid var(--border); }
+  .modal-tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .modal-tab.active { color: var(--sienna); border-bottom-color: var(--sienna); }
+  .modal-social { display: flex; gap: 10px; margin-bottom: 20px; }
+  .btn-social {
+    flex: 1;
+    padding: 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    background: #fff;
+    color: var(--bark);
+    transition: border-color .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+  }
+  .btn-social:hover { border-color: var(--sienna); }
+  .modal-divider { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .modal-divider::before, .modal-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .modal-divider span { font-size: 12px; color: var(--muted); }
+  .modal-form .form-row { margin-bottom: 14px; }
+  .modal-footer { margin-top: 16px; text-align: center; font-size: 12px; color: var(--muted); }
+  .modal-footer a { color: var(--sienna); cursor: pointer; }
+
+  /* ── TOAST ───────────────────────────────────────────────────── */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--walnut);
+    color: var(--parchment);
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 500;
+    transition: transform .3s ease;
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(28,16,8,.3);
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── FOOTER ──────────────────────────────────────────────────── */
+  .footer {
+    background: var(--walnut);
+    color: var(--parchment);
+    padding: 52px 24px 30px;
+    margin-top: 60px;
+  }
+  .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .footer-top {
+    display: grid;
+    grid-template-columns: 1.5fr repeat(3, 1fr);
+    gap: 36px;
+    margin-bottom: 40px;
+  }
+  .footer-brand h2 { font-size: 22px; font-style: italic; color: var(--parchment); margin-bottom: 10px; }
+  .footer-brand h2 span { color: var(--sienna); }
+  .footer-brand p { font-size: 13px; color: rgba(240,235,227,.6); line-height: 1.7; }
+  .footer-col h4 { font-size: 12px; font-weight: 600; letter-spacing: .8px; text-transform: uppercase; color: var(--sage-lt); margin-bottom: 14px; }
+  .footer-col a { display: block; font-size: 13px; color: rgba(240,235,227,.65); margin-bottom: 8px; cursor: pointer; transition: color .15s; }
+  .footer-col a:hover { color: var(--parchment); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,.1); padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .footer-bottom p { font-size: 12px; color: rgba(240,235,227,.45); }
+
+  /* ── RESPONSIVE ──────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .topbar { gap: 10px; }
+    .topbar-search { max-width: none; }
+    .detail-layout, .checkout-layout, .shop-body, .dash-layout, .search-layout { grid-template-columns: 1fr; }
+    .filter-panel, .order-summary-box, .dash-nav, .shop-sidebar { position: static; }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+    .detail-imgs { position: static; }
+  }
+  @media (max-width: 520px) {
+    .footer-top { grid-template-columns: 1fr; }
+    .hero { padding: 52px 16px 60px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+
+  /* ── LISTING FORM ────────────────────────────────────────────── */
+  .listing-form-box {
+    background: #fff;
+    border-radius: var(--r-lg);
+    padding: 28px;
+    box-shadow: 0 2px 8px var(--shadow);
+    max-width: 700px;
+  }
+  .listing-form-box h2 { font-size: 22px; margin-bottom: 6px; }
+  .listing-form-box .sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+  .img-upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--r);
+    padding: 28px;
+    text-align: center;
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color .2s;
+    margin-bottom: 18px;
+  }
+  .img-upload-zone:hover { border-color: var(--sage); }
+  .img-upload-zone .up-icon { font-size: 36px; margin-bottom: 8px; }
+  .img-upload-zone p { font-size: 13px; }
+  .textarea-input {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-size: 14px;
+    outline: none;
+    color: var(--walnut);
+    background: var(--linen);
+    transition: border-color .2s;
+    resize: vertical;
+    min-height: 100px;
+  }
+  .textarea-input:focus { border-color: var(--sienna); }
+  .select-input {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-size: 14px;
+    outline: none;
+    color: var(--walnut);
+    background: var(--linen);
+    cursor: pointer;
+  }
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .toggle-row:last-child { border-bottom: none; }
+  .toggle-info h4 { font-size: 14px; margin-bottom: 2px; }
+  .toggle-info p { font-size: 12px; color: var(--muted); }
+  .toggle-switch {
+    width: 44px;
+    height: 24px;
+    background: var(--border);
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: background .2s;
+    flex-shrink: 0;
+  }
+  .toggle-switch.on { background: var(--sage); }
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    transition: left .2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  }
+  .toggle-switch.on::after { left: 22px; }
+
+  /* ── ORDER DETAIL ────────────────────────────────────────────── */
+  .order-detail-card {
+    background: #fff;
+    border-radius: var(--r-lg);
+    padding: 28px;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+
+  /* ── CHECKOUT STEPS ──────────────────────────────────────────── */
+  .co-step {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+    cursor: pointer;
+    padding: 2px 0;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+  .co-step.active { color: var(--sienna); border-bottom-color: var(--sienna); font-weight: 700; cursor: default; }
+  .co-step.done { color: var(--bark); text-decoration: underline; text-underline-offset: 3px; }
+  .co-chevron { color: var(--border); font-size: 18px; padding: 0 10px; }
+
+  .co-step-panel { display: none; }
+  .co-step-panel.active { display: block; }
+
+  /* ── SHIPPING OPTIONS ────────────────────────────────────────── */
+  .shipping-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+  }
+  .shipping-option.active { border-color: var(--sienna); background: #FFF5F0; }
+  .shipping-option:hover { border-color: var(--sienna); }
+
+  /* ── PAYMENT METHOD BUTTONS ──────────────────────────────────── */
+  .pay-method-btn {
+    padding: 9px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--bark);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .pay-method-btn.active { border-color: var(--sienna); background: #FFF5F0; color: var(--sienna); }
+  .pay-method-btn:hover { border-color: var(--sienna); }
+
+  /* ── CART: qty controls inline ───────────────────────────────── */
+  .cart-qty-ctrl {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    height: 28px;
+  }
+  .cart-qty-btn {
+    width: 26px;
+    height: 28px;
+    background: var(--cream);
+    border: none;
+    font-size: 16px;
+    color: var(--bark);
+    cursor: pointer;
+    transition: background .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cart-qty-btn:hover { background: var(--parchment); }
+  .cart-qty-num {
+    width: 30px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    outline: none;
+    background: #fff;
+    pointer-events: none;
+  }
+
+  /* ── CART SHOP GROUPING ──────────────────────────────────────── */
+  .cart-shop-group { margin-bottom: 8px; }
+  .cart-shop-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--muted);
+    padding: 10px 0 6px;
+    border-top: 1px solid var(--border);
+  }
+  .cart-shop-label:first-child { border-top: none; }
+</style>
+</head>
+<body>
+
+<!-- ── TOP NAV ─────────────────────────────────────────── -->
+<nav class="topbar">
+  <div class="topbar-logo" onclick="showView('home')">Sketch<span>y</span></div>
+  <div class="topbar-search">
+    <input type="text" id="searchInput" placeholder="Search handmade, vintage, and unique goods…" onkeydown="if(event.key==='Enter')doSearch()">
+    <button onclick="doSearch()">Search</button>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn-ghost" onclick="showView('sell-dashboard')" id="sellerBtn">Seller Hub</button>
+    <button class="cart-btn" onclick="openCart()">
+      🛍 Cart <span class="cart-count" id="cartCountBadge">0</span>
+    </button>
+    <button class="btn-primary" onclick="openAuth()" id="authBtn">Sign in</button>
+  </div>
+</nav>
+
+<!-- ── CATEGORY STRIP ─────────────────────────────────── -->
+<div class="cat-strip" id="catStrip">
+  <button class="cat-pill active" onclick="filterCat('all',this)">All</button>
+  <button class="cat-pill" onclick="filterCat('jewelry',this)">Jewelry</button>
+  <button class="cat-pill" onclick="filterCat('ceramics',this)">Ceramics</button>
+  <button class="cat-pill" onclick="filterCat('textiles',this)">Textiles & Fiber</button>
+  <button class="cat-pill" onclick="filterCat('art',this)">Art & Prints</button>
+  <button class="cat-pill" onclick="filterCat('woodwork',this)">Woodwork</button>
+  <button class="cat-pill" onclick="filterCat('vintage',this)">Vintage</button>
+  <button class="cat-pill" onclick="filterCat('candles',this)">Candles & Scents</button>
+  <button class="cat-pill" onclick="filterCat('plants',this)">Plants & Garden</button>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     VIEW: HOME
+═════════════════════════════════════════════════════════ -->
+<div class="view active" id="view-home">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">Handmade · Vintage · One-of-a-Kind</div>
+      <h1>Made by real people,<br><em>for people like you</em></h1>
+      <p>Browse thousands of unique items crafted by independent artisans. Every purchase supports a maker directly.</p>
+      <div class="hero-ctas">
+        <button class="btn-hero" onclick="showView('search')">Explore the Market</button>
+        <button class="btn-hero-outline" onclick="showView('sell-dashboard')">Open Your Shop →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Featured Products -->
+  <div class="section">
+    <div class="section-header">
+      <div>
+        <h2>Trending Right Now</h2>
+        <p>What makers and buyers are loving this week</p>
+      </div>
+      <span class="see-all" onclick="showView('search')">See all →</span>
+    </div>
+    <div class="product-grid" id="featuredGrid"></div>
+  </div>
+
+  <!-- Promo Strip -->
+  <div class="promo-strip">
+    <div class="promo-strip-inner">
+      <div class="promo-item">
+        <div class="promo-icon">🤝</div>
+        <h3>Maker-Direct</h3>
+        <p>Your money goes straight to the artist — no middlemen, no markups.</p>
+      </div>
+      <div class="promo-item">
+        <div class="promo-icon">✦</div>
+        <h3>Truly Unique</h3>
+        <p>From one-of-a-kind originals to made-to-order customs, nothing here is mass-produced.</p>
+      </div>
+      <div class="promo-item">
+        <div class="promo-icon">🔒</div>
+        <h3>Secure Checkout</h3>
+        <p>Payments handled by Stripe. Your card details never touch our servers.</p>
+      </div>
+      <div class="promo-item">
+        <div class="promo-icon">💬</div>
+        <h3>Message Sellers</h3>
+        <p>Ask about custom orders, sizing, or gift wrapping directly from a listing.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Featured Shops -->
+  <div class="section">
+    <div class="section-header">
+      <div>
+        <h2>Shops Worth Exploring</h2>
+        <p>Curated storefronts from dedicated makers</p>
+      </div>
+    </div>
+    <div class="shop-row" id="featuredShops"></div>
+  </div>
+
+  <!-- New Arrivals -->
+  <div class="section">
+    <div class="section-header">
+      <div>
+        <h2>New Arrivals</h2>
+        <p>Fresh listings from the past week</p>
+      </div>
+      <span class="see-all" onclick="showView('search')">See all →</span>
+    </div>
+    <div class="product-grid" id="newArrivalsGrid"></div>
+  </div>
+
+</div><!-- /view-home -->
+
+<!-- ════════════════════════════════════════════════════════
+     VIEW: SEARCH / BROWSE
+═════════════════════════════════════════════════════════ -->
+<div class="view" id="view-search">
+  <div class="search-layout">
+
+    <!-- Filters -->
+    <aside class="filter-panel">
+      <h3>Filters</h3>
+
+      <div class="filter-group">
+        <label>Category</label>
+        <label class="filter-check"><input type="checkbox" checked> All items</label>
+        <label class="filter-check"><input type="checkbox"> Jewelry</label>
+        <label class="filter-check"><input type="checkbox"> Ceramics</label>
+        <label class="filter-check"><input type="checkbox"> Textiles</label>
+        <label class="filter-check"><input type="checkbox"> Art & Prints</label>
+        <label class="filter-check"><input type="checkbox"> Woodwork</label>
+        <label class="filter-check"><input type="checkbox"> Vintage</label>
+        <label class="filter-check"><input type="checkbox"> Candles</label>
+      </div>
+
+      <div class="filter-group">
+        <label>Price Range</label>
+        <div class="price-row">
+          <input class="price-input" type="number" placeholder="Min" id="priceMin">
+          <span style="color:var(--muted);font-size:12px">–</span>
+          <input class="price-input" type="number" placeholder="Max" id="priceMax">
+        </div>
+        <button class="btn-apply" onclick="applyFilters()">Apply</button>
+      </div>
+
+      <div class="filter-group">
+        <label>Item Type</label>
+        <label class="filter-check"><input type="checkbox"> Handmade</label>
+        <label class="filter-check"><input type="checkbox"> Vintage</label>
+        <label class="filter-check"><input type="checkbox"> Made to Order</label>
+        <label class="filter-check"><input type="checkbox"> One-of-a-Kind</label>
+      </div>
+
+      <div class="filter-group">
+        <label>Shipping</label>
+        <label class="filter-check"><input type="checkbox"> Ships free</label>
+        <label class="filter-check"><input type="checkbox"> Ready to ship</label>
+        <label class="filter-check"><input type="checkbox"> Local pickup</label>
+      </div>
+
+      <div class="filter-group">
+        <label>Seller Rating</label>
+        <label class="filter-check"><input type="checkbox"> ⭐⭐⭐⭐⭐ 5 stars</label>
+        <label class="filter-check"><input type="checkbox"> ⭐⭐⭐⭐ 4+ stars</label>
+        <label class="filter-check"><input type="checkbox"> ⭐⭐⭐ 3+ stars</label>
+      </div>
+    </aside>
+
+    <!-- Results -->
+    <div>
+      <div class="results-header">
+        <span class="results-count" id="resultsCount">Showing all items</span>
+        <select class="sort-select" onchange="sortResults(this.value)">
+          <option value="relevance">Most Relevant</option>
+          <option value="recent">Newest First</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="rating">Highest Rated</option>
+        </select>
+      </div>
+      <div class="product-grid" id="searchGrid"></div>
+    </div>
+
+  </div>
+</div><!-- /view-search -->
+
+<!-- ════════════════════════════════════════════════════════
+     VIEW: PRODUCT DETAIL
+═════════════════════════════════════════════════════════ -->
+<div class="view" id="view-product">
+  <div style="max-width:1100px;margin:0 auto;padding:16px 24px;">
+    <span style="font-size:13px;color:var(--muted);cursor:pointer;" onclick="history.go(-1) || showView('home')">← Back</span>
+  </div>
+  <div class="detail-layout" id="productDetailContent"></div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     VIEW: SHOP STOREFRONT
+═════════════════════════════════════════════════════════ -->
+<div class="view" id="view-shop">
+  <div class="shop-banner" id="shopBanner">
+    <div class="shop-banner-meta" id="shopBannerMeta"></div>
+  </div>
+  <div class="shop-body">
+    <aside class="shop-sidebar">
+      <div class="shop-about" id="shopAbout"></div>
+      <div class="shop-about" id="shopPolicies"></div>
+    </aside>
+    <div>
+      <div class="section-header" style="margin-bottom:20px;">
+        <div><h2 id="shopListingsTitle">Listings</h2></div>
+      </div>
+      <div class="product-grid" id="shopGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     VIEW: CHECKOUT (multi-step, Etsy-style)
+═════════════════════════════════════════════════════════ -->
+<div class="view" id="view-checkout">
+  <!-- Step breadcrumb -->
+  <div style="background:#fff;border-bottom:1px solid var(--border);padding:0 24px;">
+    <div style="max-width:900px;margin:0 auto;display:flex;align-items:center;gap:0;padding:14px 0;">
+      <span class="co-step active" id="coStep1" onclick="goCheckoutStep(1)">Cart</span>
+      <span class="co-chevron">›</span>
+      <span class="co-step" id="coStep2">Shipping</span>
+      <span class="co-chevron">›</span>
+      <span class="co-step" id="coStep3">Payment</span>
+      <span class="co-chevron">›</span>
+      <span class="co-step" id="coStep4">Review</span>
+    </div>
+  </div>
+
+  <div class="checkout-layout" style="padding-top:28px;">
+    <div>
+
+      <!-- STEP 1: Cart review -->
+      <div class="co-step-panel active" id="coPanel1">
+        <div class="checkout-form-box">
+          <h2>Review your cart</h2>
+          <div id="checkoutCartReview"></div>
+          <div class="coupon-row" style="margin-top:16px;">
+            <input class="coupon-input" type="text" placeholder="Discount or gift card code" id="couponInput">
+            <button class="btn-apply-coupon" onclick="applyCoupon()">Apply</button>
+          </div>
+        </div>
+        <button class="btn-checkout" style="margin-top:16px;" onclick="goCheckoutStep(2)">Continue to Shipping →</button>
+      </div>
+
+      <!-- STEP 2: Shipping -->
+      <div class="co-step-panel" id="coPanel2">
+        <div class="checkout-form-box" style="margin-bottom:16px;">
+          <h2>Shipping address</h2>
+          <div class="form-row"><label>Full name</label><input class="form-input" type="text" placeholder="Jane Doe" id="coName"></div>
+          <div class="form-row"><label>Email</label><input class="form-input" type="email" placeholder="jane@example.com" id="coEmail"></div>
+          <div class="form-row"><label>Street address</label><input class="form-input" type="text" placeholder="123 Maple St" id="coAddr"></div>
+          <div class="form-row"><label>Apt / Suite (optional)</label><input class="form-input" type="text" placeholder="Apt 4B"></div>
+          <div class="form-2col">
+            <div class="form-row"><label>City</label><input class="form-input" type="text" placeholder="Portland" id="coCity"></div>
+            <div class="form-row"><label>ZIP</label><input class="form-input" type="text" placeholder="97201" id="coZip"></div>
+          </div>
+          <div class="form-2col">
+            <div class="form-row"><label>State</label><select class="form-input" id="coState"><option>Oregon</option><option>California</option><option>New York</option><option>Texas</option><option>Washington</option><option>Other</option></select></div>
+            <div class="form-row"><label>Country</label><select class="form-input"><option>United States</option><option>Canada</option><option>United Kingdom</option></select></div>
+          </div>
+        </div>
+        <div class="checkout-form-box" style="margin-bottom:16px;">
+          <h2>Shipping method</h2>
+          <label class="shipping-option active" id="ship-std" onclick="selectShipping('std',this)">
+            <input type="radio" name="shipping" checked style="accent-color:var(--sienna);">
+            <div style="flex:1;">
+              <div style="font-weight:600;font-size:14px;">Standard shipping</div>
+              <div style="font-size:12px;color:var(--muted);">5–8 business days</div>
+            </div>
+            <div id="shipStdPrice" style="font-weight:700;font-size:14px;color:var(--sienna);">$4.99</div>
+          </label>
+          <label class="shipping-option" id="ship-exp" onclick="selectShipping('exp',this)">
+            <input type="radio" name="shipping" style="accent-color:var(--sienna);">
+            <div style="flex:1;">
+              <div style="font-weight:600;font-size:14px;">Expedited shipping</div>
+              <div style="font-size:12px;color:var(--muted);">2–3 business days</div>
+            </div>
+            <span style="font-weight:700;font-size:14px;color:var(--sienna);">$12.99</span>
+          </label>
+        </div>
+        <div class="checkout-form-box" style="margin-bottom:16px;">
+          <h2 style="font-size:16px;margin-bottom:12px;">Add a note to seller <span style="font-weight:400;font-size:13px;color:var(--muted)">(optional)</span></h2>
+          <textarea class="textarea-input" style="min-height:72px;" placeholder="Special instructions, gift message, custom requests…" id="coNote"></textarea>
+          <label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;cursor:pointer;">
+            <input type="checkbox" id="coGift" style="accent-color:var(--sienna);"> This order is a gift — include a gift receipt
+          </label>
+        </div>
+        <div style="display:flex;gap:12px;">
+          <button class="btn-ghost" style="color:var(--bark);border-color:var(--border);padding:12px 20px;" onclick="goCheckoutStep(1)">← Back</button>
+          <button class="btn-checkout" style="flex:1;" onclick="goCheckoutStep(3)">Continue to Payment →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Payment -->
+      <div class="co-step-panel" id="coPanel3">
+        <div class="checkout-form-box">
+          <h2>Payment</h2>
+          <div style="background:var(--linen);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;">
+            🔒 Payments processed by Stripe. We never store card data.
+          </div>
+          <!-- Pay method tabs -->
+          <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+            <button class="pay-method-btn active" onclick="selectPayMethod(this,'card')">💳 Credit / Debit Card</button>
+            <button class="pay-method-btn" onclick="selectPayMethod(this,'paypal')">🔵 PayPal</button>
+            <button class="pay-method-btn" onclick="selectPayMethod(this,'apple')">⬛ Apple Pay</button>
+          </div>
+          <div id="payCardForm">
+            <div class="form-row"><label>Card number</label><input class="form-input" type="text" placeholder="1234 5678 9012 3456" id="coCard"></div>
+            <div class="form-2col">
+              <div class="form-row"><label>Expiry</label><input class="form-input" type="text" placeholder="MM / YY" id="coExp"></div>
+              <div class="form-row"><label>CVC</label><input class="form-input" type="text" placeholder="123" id="coCVC"></div>
+            </div>
+            <div class="form-row"><label>Name on card</label><input class="form-input" type="text" placeholder="Jane Doe" id="coCardName"></div>
+          </div>
+          <div id="payAltMsg" style="display:none;padding:24px;text-align:center;color:var(--muted);font-size:14px;background:var(--linen);border-radius:8px;">You'll be redirected to complete payment securely.</div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:16px;">
+          <button class="btn-ghost" style="color:var(--bark);border-color:var(--border);padding:12px 20px;" onclick="goCheckoutStep(2)">← Back</button>
+          <button class="btn-checkout" style="flex:1;" onclick="goCheckoutStep(4)">Review order →</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Review & place -->
+      <div class="co-step-panel" id="coPanel4">
+        <div class="checkout-form-box">
+          <h2>Review your order</h2>
+          <div id="reviewShippingBlock" style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);font-size:13px;"></div>
+          <div id="reviewPayBlock" style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);font-size:13px;"></div>
+          <div id="checkoutItemsList"></div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:16px;">
+          <button class="btn-ghost" style="color:var(--bark);border-color:var(--border);padding:12px 20px;" onclick="goCheckoutStep(3)">← Back</button>
+          <button class="btn-checkout" style="flex:1;" onclick="placeOrder()">Place order →</button>
+        </div>
+        <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:10px;">By placing your order you agree to Sketchy's Terms of Service and Privacy Policy</p>
+      </div>
+
+    </div>
+
+    <!-- Order Summary sidebar (sticky) -->
+    <div class="order-summary-box">
+      <h3>Order summary</h3>
+      <div id="summaryItemsList" style="margin-bottom:12px;"></div>
+      <div class="summary-line"><span>Item(s) subtotal</span><span id="summarySubtotal">$0.00</span></div>
+      <div class="summary-line"><span>Shipping</span><span id="summaryShipping">—</span></div>
+      <div class="summary-line"><span>Tax (est.)</span><span id="summaryTax">$0.00</span></div>
+      <div class="summary-line total"><span>Total</span><span id="summaryTotal">$0.00</span></div>
+      <div style="margin-top:12px;padding:10px;background:var(--linen);border-radius:8px;font-size:12px;color:var(--sage);font-weight:500;text-align:center;" id="summaryFreeShip" style="display:none;">✓ Qualifies for free shipping!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     VIEW: SELLER DASHBOARD
+═════════════════════════════════════════════════════════ -->
+<div class="view" id="view-sell-dashboard">
+  <div class="dash-layout">
+
+    <nav class="dash-nav">
+      <h3>Seller Hub</h3>
+      <div class="dash-nav-item active" onclick="showDashPanel('overview',this)"><span>📊</span> Overview</div>
+      <div class="dash-nav-item" onclick="showDashPanel('orders',this)"><span>📦</span> Orders</div>
+      <div class="dash-nav-item" onclick="showDashPanel('listings',this)"><span>🏷</span> Listings</div>
+      <div class="dash-nav-item" onclick="showDashPanel('new-listing',this)"><span>➕</span> New Listing</div>
+      <div class="dash-nav-item" onclick="showDashPanel('shop-profile',this)"><span>🏪</span> Shop Profile</div>
+      <div class="dash-nav-item" onclick="showDashPanel('messages',this)"><span>💬</span> Messages</div>
+      <div class="dash-nav-item" onclick="showDashPanel('finances',this)"><span>💰</span> Finances</div>
+    </nav>
+
+    <main class="dash-main">
+
+      <!-- OVERVIEW -->
+      <div class="dash-panel active" id="dash-overview">
+        <h2 style="font-size:24px;margin-bottom:6px;">Good morning ☀️</h2>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:24px;">Here's what's happening in your shop today.</p>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Total Revenue</div>
+            <div class="stat-value">$3,240</div>
+            <div class="stat-sub">↑ 12% from last month</div>
+          </div>
+          <div class="stat-card sage">
+            <div class="stat-label">Active Listings</div>
+            <div class="stat-value">24</div>
+            <div class="stat-sub">3 drafts pending</div>
+          </div>
+          <div class="stat-card walnut">
+            <div class="stat-label">Orders This Month</div>
+            <div class="stat-value">18</div>
+            <div class="stat-sub">2 need attention</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Shop Views</div>
+            <div class="stat-value">892</div>
+            <div class="stat-sub">↑ 31% this week</div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-card-header">
+            <h3>Recent Orders</h3>
+            <span class="see-all" onclick="showDashPanel('orders', document.querySelector('[onclick*=orders]'))">View all</span>
+          </div>
+          <table>
+            <thead><tr><th>Order</th><th>Item</th><th>Buyer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody id="dashOrdersTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="dash-panel" id="dash-orders">
+        <h2 style="font-size:22px;margin-bottom:20px;">Orders</h2>
+        <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+          <button class="btn-primary" onclick="filterOrders('all',this)" style="font-size:12px;padding:6px 14px;">All</button>
+          <button class="btn-ghost" style="font-size:12px;padding:6px 14px;color:var(--bark);border-color:var(--border);" onclick="filterOrders('PENDING',this)">Open</button>
+          <button class="btn-ghost" style="font-size:12px;padding:6px 14px;color:var(--bark);border-color:var(--border);" onclick="filterOrders('COMPLETED',this)">Shipped</button>
+          <button class="btn-ghost" style="font-size:12px;padding:6px 14px;color:var(--bark);border-color:var(--border);" onclick="filterOrders('CANCELLED',this)">Cancelled</button>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>Order ID</th><th>Item</th><th>Qty</th><th>Buyer</th><th>Total</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="fullOrdersTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- LISTINGS MANAGEMENT -->
+      <div class="dash-panel" id="dash-listings">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+          <h2 style="font-size:22px;">My Listings</h2>
+          <button class="btn-primary" onclick="showDashPanel('new-listing', document.querySelector('[onclick*=new-listing]'))">+ New Listing</button>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>Item</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="listingsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- NEW LISTING FORM -->
+      <div class="dash-panel" id="dash-new-listing">
+        <div class="listing-form-box">
+          <h2>Create a Listing</h2>
+          <p class="sub">Tell buyers about your item. Good photos and clear descriptions drive sales.</p>
+
+          <div class="img-upload-zone" onclick="showToast('Photo upload ready in production 📸')">
+            <div class="up-icon">📷</div>
+            <p><strong>Add photos</strong> — drag & drop or click to browse</p>
+            <p style="font-size:11px;margin-top:4px;">Upload up to 10 photos. First photo will be your cover.</p>
+          </div>
+
+          <div class="form-row"><label>Listing title</label><input class="form-input" type="text" placeholder="E.g. Hand-thrown terracotta mug with sage glaze" id="newListingTitle"></div>
+          <div class="form-row"><label>Description</label><textarea class="textarea-input" placeholder="Describe your item — materials, dimensions, care instructions, the story behind it…" id="newListingDesc"></textarea></div>
+          <div class="form-2col">
+            <div class="form-row"><label>Price ($)</label><input class="form-input" type="number" placeholder="24.00" id="newListingPrice"></div>
+            <div class="form-row"><label>Quantity</label><input class="form-input" type="number" placeholder="1" id="newListingQty"></div>
+          </div>
+          <div class="form-row">
+            <label>Category</label>
+            <select class="select-input">
+              <option value="">Select a category…</option>
+              <option>Jewelry</option>
+              <option>Ceramics</option>
+              <option>Textiles & Fiber</option>
+              <option>Art & Prints</option>
+              <option>Woodwork</option>
+              <option>Vintage</option>
+              <option>Candles & Scents</option>
+              <option>Plants & Garden</option>
+            </select>
+          </div>
+          <div class="form-row"><label>Tags (comma-separated)</label><input class="form-input" type="text" placeholder="mug, pottery, ceramic, handmade"></div>
+          <div class="form-row">
+            <label>Shipping profile</label>
+            <select class="select-input">
+              <option>Free shipping</option>
+              <option>Flat rate — $4.99</option>
+              <option>Flat rate — $8.99</option>
+              <option>Calculated by carrier</option>
+            </select>
+          </div>
+
+          <div style="background:var(--linen);border-radius:var(--r);padding:16px;margin-bottom:20px;">
+            <h4 style="font-size:14px;margin-bottom:12px;">Listing options</h4>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <h4>One-of-a-kind item</h4>
+                <p>Locks quantity to 1 and enables concurrency protection against double-booking.</p>
+              </div>
+              <div class="toggle-switch" id="toggleOOAK" onclick="toggleSwitch('toggleOOAK')"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <h4>Save as draft</h4>
+                <p>Item won't be visible to buyers until you publish it.</p>
+              </div>
+              <div class="toggle-switch on" id="toggleDraft" onclick="toggleSwitch('toggleDraft')"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <h4>Accept custom orders</h4>
+                <p>Buyers can message you with custom requests for this item.</p>
+              </div>
+              <div class="toggle-switch on" id="toggleCustom" onclick="toggleSwitch('toggleCustom')"></div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;">
+            <button class="btn-primary" onclick="createListing()" style="padding:12px 28px;font-size:14px;">Publish Listing</button>
+            <button style="background:var(--cream);color:var(--bark);border-radius:7px;padding:12px 22px;font-size:14px;font-weight:500;border:1.5px solid var(--border);">Save Draft</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHOP PROFILE EDITOR -->
+      <div class="dash-panel" id="dash-shop-profile">
+        <div class="listing-form-box">
+          <h2>Shop Profile</h2>
+          <p class="sub">Your public storefront — this is what buyers see when they visit your shop.</p>
+
+          <div class="img-upload-zone" onclick="showToast('Banner upload ready in production 🏞')">
+            <div class="up-icon">🖼</div>
+            <p><strong>Upload a banner image</strong></p>
+            <p style="font-size:11px;margin-top:4px;">Recommended: 1200×300 px</p>
+          </div>
+
+          <div class="form-row"><label>Shop name</label><input class="form-input" type="text" placeholder="e.g. ClayAndThyme Studio" value="ClayAndThyme"></div>
+          <div class="form-row"><label>Shop tagline</label><input class="form-input" type="text" placeholder="A one-line description for search results and previews"></div>
+          <div class="form-row"><label>About your shop</label><textarea class="textarea-input" placeholder="Tell buyers who you are, what you make, and what makes your work special…">Hand-thrown ceramics made in Portland, OR. Each piece is one-of-a-kind and food-safe.</textarea></div>
+          <div class="form-row"><label>Shop announcement</label><textarea class="textarea-input" style="min-height:64px;" placeholder="Optional: pin a note to the top of your storefront (sales, delays, etc.)"></textarea></div>
+
+          <h3 style="font-size:16px;margin:24px 0 14px;">Shop Policies</h3>
+          <div class="form-row"><label>Shipping policy</label><textarea class="textarea-input" style="min-height:64px;">Ships within 3–5 business days. All items packed with care and recycled materials.</textarea></div>
+          <div class="form-row"><label>Returns & exchanges</label><textarea class="textarea-input" style="min-height:64px;">Exchanges accepted within 14 days. Contact me before returning any item.</textarea></div>
+          <div class="form-row"><label>Custom orders</label><textarea class="textarea-input" style="min-height:64px;">Love collaborating on custom pieces. Message me with your idea!</textarea></div>
+
+          <button class="btn-primary" onclick="showToast('Shop profile saved ✓')" style="padding:12px 28px;font-size:14px;">Save Profile</button>
+        </div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="dash-panel" id="dash-messages">
+        <h2 style="font-size:22px;margin-bottom:20px;">Messages</h2>
+        <div style="background:#fff;border-radius:var(--r-lg);box-shadow:0 2px 8px var(--shadow);overflow:hidden;display:grid;grid-template-columns:260px 1fr;">
+          <div style="border-right:1px solid var(--border);">
+            <div style="padding:14px 18px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;">Conversations</div>
+            <div id="messageThreads"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;height:420px;">
+            <div style="padding:16px 20px;border-bottom:1px solid var(--border);font-size:14px;font-weight:600;" id="msgHeader">Select a conversation</div>
+            <div style="flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;" id="msgBody">
+              <div style="text-align:center;color:var(--muted);font-size:13px;padding:40px 0;">Choose a conversation from the left to start reading.</div>
+            </div>
+            <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:10px;">
+              <input class="form-input" type="text" placeholder="Type a message…" id="msgInput" style="margin:0;">
+              <button class="btn-primary" onclick="sendMessage()" style="padding:10px 18px;font-size:13px;flex-shrink:0;">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FINANCES -->
+      <div class="dash-panel" id="dash-finances">
+        <h2 style="font-size:22px;margin-bottom:20px;">Finances</h2>
+        <div class="stats-grid" style="margin-bottom:24px;">
+          <div class="stat-card">
+            <div class="stat-label">Available Balance</div>
+            <div class="stat-value">$1,840</div>
+            <div class="stat-sub">Ready to deposit</div>
+          </div>
+          <div class="stat-card sage">
+            <div class="stat-label">Pending</div>
+            <div class="stat-value">$320</div>
+            <div class="stat-sub">Releases in 5 days</div>
+          </div>
+          <div class="stat-card walnut">
+            <div class="stat-label">Platform Fees</div>
+            <div class="stat-value">$162</div>
+            <div class="stat-sub">6.5% of sales</div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-card-header"><h3>Transaction History</h3></div>
+          <table>
+            <thead><tr><th>Date</th><th>Description</th><th>Type</th><th>Amount</th></tr></thead>
+            <tbody>
+              <tr><td>Jun 7</td><td>Order #7821 — Sage glaze mug</td><td><span class="status-pill shipped">Sale</span></td><td style="color:var(--sage);font-weight:600;">+$38.00</td></tr>
+              <tr><td>Jun 5</td><td>Order #7804 — Linen throw pillow</td><td><span class="status-pill shipped">Sale</span></td><td style="color:var(--sage);font-weight:600;">+$74.00</td></tr>
+              <tr><td>Jun 5</td><td>Platform fee — Order #7804</td><td><span class="status-pill cancelled">Fee</span></td><td style="color:#B91C1C;font-weight:600;">−$4.81</td></tr>
+              <tr><td>Jun 2</td><td>Deposit to bank account</td><td><span class="status-pill completed">Payout</span></td><td style="color:var(--muted);">−$420.00</td></tr>
+              <tr><td>May 31</td><td>Order #7789 — Block print tote</td><td><span class="status-pill shipped">Sale</span></td><td style="color:var(--sage);font-weight:600;">+$52.00</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div><!-- /view-sell-dashboard -->
+
+<!-- ════════════════════════════════════════════════════════
+     VIEW: ORDER CONFIRMATION
+═════════════════════════════════════════════════════════ -->
+<div class="view" id="view-order-confirm">
+  <div style="max-width:600px;margin:48px auto;padding:0 24px;">
+    <div style="background:#fff;border-radius:var(--r-lg);box-shadow:0 2px 8px var(--shadow);padding:40px 36px;text-align:center;">
+      <div style="width:72px;height:72px;background:#D1FAE5;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px;">✓</div>
+      <h1 style="font-size:26px;margin-bottom:8px;">Order confirmed!</h1>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:24px;">A confirmation has been sent to your email. Your handmade items are on their way.</p>
+      <div style="background:var(--linen);border-radius:var(--r);padding:16px;text-align:left;margin-bottom:24px;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px;">Order details</div>
+        <div id="confirmOrderItems" style="font-size:13px;color:var(--bark);"></div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:14px;font-weight:700;">
+          <span>Total paid</span><span id="confirmTotal" style="color:var(--sienna);"></span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;align-items:center;">
+        <button class="btn-primary" onclick="showView('home')" style="padding:13px 40px;font-size:15px;width:100%;">Continue shopping</button>
+        <button onclick="showToast('Order tracking coming soon 📦')" style="background:none;border:1.5px solid var(--border);color:var(--bark);border-radius:8px;padding:11px 24px;font-size:13px;font-weight:600;width:100%;cursor:pointer;">Track your order</button>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px;font-size:12px;color:var(--muted);">Questions? <span style="color:var(--sienna);cursor:pointer;" onclick="showToast('Connecting you to support…')">Contact seller or Sketchy support</span></div>
+  </div>
+</div>
+
+<!-- ── CART SLIDE-IN ───────────────────────────────────── -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-header">
+    <h2>Shopping Cart (<span id="cartHeaderCount">0</span>)</h2>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <!-- Free shipping progress bar -->
+  <div id="freeShippingBar" style="padding:10px 22px;background:var(--cream);border-bottom:1px solid var(--border);font-size:12px;color:var(--bark);display:none;">
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+      <span id="freeShippingMsg"></span>
+      <span style="color:var(--sage);font-weight:600;">FREE shipping</span>
+    </div>
+    <div style="background:var(--border);border-radius:4px;height:5px;overflow:hidden;">
+      <div id="freeShippingFill" style="height:100%;background:var(--sage);border-radius:4px;transition:width .4s;"></div>
+    </div>
+  </div>
+  <div class="cart-items" id="cartItemsList"></div>
+  <div class="cart-footer">
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px;"><span>Item(s) subtotal</span><span id="cartSubtotal">$0.00</span></div>
+    <div class="cart-total"><span>Estimated total</span><span id="cartTotal">$0.00</span></div>
+    <button class="btn-checkout" onclick="goCheckout()">Proceed to checkout →</button>
+    <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px;font-size:11px;color:var(--muted);">
+      <span>🔒</span><span>Secure checkout via Stripe</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── AUTH MODAL ─────────────────────────────────────── -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <h2>Welcome to Sketchy</h2>
+    <p>Sign in to save favorites, message sellers, and track orders.</p>
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="switchAuthTab('signin',this)">Sign In</button>
+      <button class="modal-tab" onclick="switchAuthTab('register',this)">Register</button>
+    </div>
+    <div class="modal-social">
+      <button class="btn-social" onclick="socialLogin('Google')">🔵 Continue with Google</button>
+      <button class="btn-social" onclick="socialLogin('Apple')">⬛ Continue with Apple</button>
+    </div>
+    <div class="modal-divider"><span>or</span></div>
+    <div class="modal-form">
+      <div class="form-row"><label>Email</label><input class="form-input" type="email" placeholder="you@example.com" id="authEmail"></div>
+      <div class="form-row"><label>Password</label><input class="form-input" type="password" placeholder="••••••••" id="authPassword"></div>
+      <div class="form-row" id="authNameRow" style="display:none;"><label>Full name</label><input class="form-input" type="text" placeholder="Jane Doe" id="authName"></div>
+      <div class="form-row" id="authRoleRow" style="display:none;">
+        <label>I want to…</label>
+        <select class="select-input" id="authRole">
+          <option value="BUYER">Browse and buy</option>
+          <option value="SELLER">Sell my work</option>
+        </select>
+      </div>
+      <button class="btn-primary" onclick="doAuth()" style="width:100%;padding:12px;font-size:15px;margin-top:8px;" id="authSubmitBtn">Sign In</button>
+    </div>
+    <div class="modal-footer"><a onclick="showView('home');closeAuth()">Skip for now</a> · <a>Forgot password?</a></div>
+    <button onclick="closeAuth()" style="position:absolute;top:16px;right:16px;background:var(--cream);border:none;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;color:var(--bark);">✕</button>
+  </div>
+</div>
+
+<!-- ── TOAST ──────────────────────────────────────────── -->
+<div class="toast" id="toast"></div>
+
+<!-- ── FOOTER ─────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h2>Sketch<span>y</span></h2>
+        <p>A marketplace built for makers. We believe every handcrafted item deserves to find the right person.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Shop</h4>
+        <a onclick="showView('search')">Browse All</a>
+        <a>Jewelry</a>
+        <a>Ceramics</a>
+        <a>Textiles</a>
+        <a>Vintage</a>
+      </div>
+      <div class="footer-col">
+        <h4>Sell</h4>
+        <a onclick="showView('sell-dashboard')">Open a Shop</a>
+        <a>Seller Handbook</a>
+        <a>Fees & Payments</a>
+        <a>Seller Community</a>
+      </div>
+      <div class="footer-col">
+        <h4>Sketchy</h4>
+        <a>About Us</a>
+        <a>Press</a>
+        <a>Careers</a>
+        <a>Help Center</a>
+        <a>Privacy Policy</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Sketchy, Inc. All rights reserved.</p>
+      <p>Built with ♥ for independent makers everywhere.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ════════════════════════════════════════════════════════
+     JAVASCRIPT
+═════════════════════════════════════════════════════════ -->
+<script>
+// ── DATA ───────────────────────────────────────────────
+const PRODUCTS = [
+  { id:1, name:'Hand-thrown Terracotta Mug', shop:'ClayAndThyme', shopId:1, price:38, stock:4, category:'ceramics', badge:'Bestseller', img:'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&h=600&fit=crop', imgs:['https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1604598769635-6cde6bd5b5d5?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600&h=600&fit=crop'], rating:4.9, reviews:128, desc:'Each mug is wheel-thrown and fired twice for durability. Food-safe glaze. Holds 12 oz. Dishwasher safe but hand-wash recommended to preserve the glaze finish. Made in Portland, OR.', tags:['mug','ceramic','handmade','terracotta'], variations:{ Color:['Sage Green','Desert Sand','Midnight Blue'], Size:['8 oz','12 oz','16 oz'] } },
+  { id:2, name:'Pressed Wildflower Resin Ring', shop:'PetalForge', shopId:2, price:62, stock:2, category:'jewelry', badge:'One-of-a-Kind', badgeType:'sienna', img:'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=600&fit=crop', imgs:['https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1573408301185-9519f94f7a81?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=600&h=600&fit=crop'], rating:5.0, reviews:43, desc:'Real pressed wildflowers sealed in hand-cast resin. Sterling silver band. Each ring is unique — the flower placement is never the same twice. Comes gift-boxed.', tags:['ring','resin','flowers','jewelry'], variations:{ Size:['5','6','7','8','9'] } },
+  { id:3, name:'Hand-block Printed Linen Tote', shop:'ThreadAndBlock', shopId:3, price:52, stock:12, category:'textiles', badge:null, img:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&h=600&fit=crop', imgs:['https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1575428652377-a2d80e2277fc?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=600&h=600&fit=crop'], rating:4.7, reviews:87, desc:'100% natural linen, block-printed by hand with non-toxic ink. Holds a week of groceries. 18" × 15" with 10" handles. Machine wash cold, air dry.', tags:['tote','linen','block print','textiles'], variations:{ Pattern:['Botanical Vine','Geometric','Indigo Dots'] } },
+  { id:4, name:'Reclaimed Oak Serving Board', shop:'GrainAndGrain', shopId:4, price:84, stock:6, category:'woodwork', badge:'New', badgeType:'sage', img:'https://images.unsplash.com/photo-1611486212355-d276af4581c0?w=600&h=600&fit=crop', imgs:['https://images.unsplash.com/photo-1611486212355-d276af4581c0?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1588278543327-63e65a8d5a5f?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?w=600&h=600&fit=crop'], rating:4.8, reviews:62, desc:'Handcrafted from reclaimed white oak with a beeswax-and-linseed oil finish. 14" × 8". Includes a leather hang loop. Food-safe. No two boards have the same grain pattern.', tags:['cutting board','wood','serving','oak'], variations:{ Size:['Small (10")','Medium (14")','Large (18")'] } },
+  { id:5, name:'Beeswax & Sage Bundle Candle', shop:'WickWitch', shopId:5, price:22, stock:20, category:'candles', badge:null, img:'https://images.unsplash.com/photo-1608181831718-c9fda686d4f8?w=600&h=600&fit=crop', imgs:['https://images.unsplash.com/photo-1608181831718-c9fda686d4f8?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1603905830740-0eef9c5e48d8?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1574684891174-df6b02ab38d7?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=600&h=600&fit=crop'], rating:4.6, reviews:204, desc:'Hand-dipped 100% beeswax pillar with a dried sage bundle tied on. Burns approx. 40 hours. No synthetic fragrance — the warm honey scent is from the wax itself.', tags:['candle','beeswax','sage','natural'], variations:{ Size:['Small','Medium','Large'] } },
+  { id:6, name:'Indigo Shibori Table Runner', shop:'ThreadAndBlock', shopId:3, price:78, stock:3, category:'textiles', badge:null, img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop', imgs:['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1484502249930-cd440a4b6db5?w=600&h=600&fit=crop'], rating:4.9, reviews:35, desc:'Traditional Japanese shibori dyeing technique applied to 100% cotton. 14" × 72". Each runner has a unique resist pattern from the hand-tying process. Dry clean or hand wash.', tags:['runner','shibori','indigo','table'], variations:{} },
+  { id:7, name:'Vintage 1970s Brass Wall Clock', shop:'TimeCapsuleVintage', shopId:6, price:115, stock:1, category:'vintage', badge:'Vintage', img:'https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?w=600&h=600&fit=crop', imgs:['https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1495364141860-b0d03eccd065?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1580537659466-0a9bfa916a54?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600&h=600&fit=crop'], rating:4.8, reviews:19, desc:'Original 1970s Mid-Century Modern brass wall clock. Cleaned and serviced — keeps perfect time with a AA battery (included). Diameter: 12". Minor patina adds character.', tags:['clock','vintage','brass','mid-century'], variations:{} },
+  { id:8, name:'Wheel-thrown Speckled Planter', shop:'ClayAndThyme', shopId:1, price:44, stock:8, category:'ceramics', badge:null, img:'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=600&fit=crop', imgs:['https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1556909172-8c2f041fca1e?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1512428559087-560fa5ceab42?w=600&h=600&fit=crop'], rating:4.7, reviews:91, desc:'Wheel-thrown stoneware planter with a drainage hole. Speckled white glaze over terracotta clay. 5" diameter fits most 4" nursery pots. Not intended for outdoor use.', tags:['planter','ceramic','stoneware','succulents'], variations:{ Size:['4"','5"','6"','8"'] } },
+  { id:9, name:'Hand-forged Copper Earrings', shop:'PetalForge', shopId:2, price:45, stock:7, category:'jewelry', badge:null, img:'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600&h=600&fit=crop', imgs:['https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1601121141418-2f8e0b1c5a8b?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1630019852942-f89202989a59?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=600&h=600&fit=crop'], rating:4.9, reviews:56, desc:'Hammered copper discs, hand-forged and lightly oxidized for depth. Stainless steel ear wires for sensitive ears. Approximately 1.5" diameter.', tags:['earrings','copper','forged','jewelry'], variations:{ Finish:['Natural Copper','Oxidized Bronze','Gilded'] } },
+  { id:10, name:'Screen-printed Botanical Art Print', shop:'ThreadAndBlock', shopId:3, price:36, stock:15, category:'art', badge:null, img:'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&h=600&fit=crop', imgs:['https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1600005310003-6a7d4f2ff467?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1609726494499-27d3e2d022c4?w=600&h=600&fit=crop'], rating:4.8, reviews:143, desc:'Two-color screen print on 100lb archival paper. 11" × 14". Signed and numbered edition of 75. Printed with water-based inks in a home studio.', tags:['print','botanical','screenprint','art'], variations:{ Size:['5×7"','8×10"','11×14"'] } },
+  { id:11, name:'Macramé Plant Hanger Trio', shop:'KnotAndWild', shopId:7, price:58, stock:5, category:'textiles', badge:'Bestseller', img:'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&h=600&fit=crop', imgs:['https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1585320806297-9794b3e4aaae?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1481277542470-605612bd2d61?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=600&fit=crop'], rating:5.0, reviews:72, desc:'Set of three macramé hangers in natural cotton rope. Holds pots up to 6" diameter. Each hanger is roughly 36" from loop to tassel. Handmade in Austin, TX.', tags:['macrame','plant hanger','cotton','boho'], variations:{} },
+  { id:12, name:'Letterpress Thank-You Card Set', shop:'PaperCrane Studio', shopId:8, price:18, stock:30, category:'art', badge:'New', badgeType:'sage', img:'https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=600&h=600&fit=crop', imgs:['https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1606293926075-69a00dbfde81?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&h=600&fit=crop'], rating:4.7, reviews:38, desc:'Set of 8 letterpress-printed cards with envelopes. Printed on 110lb cotton cardstock. Blank inside. Designs drawn and pressed by hand in our Brooklyn studio.', tags:['cards','letterpress','stationery','gifts'], variations:{ Pack:['Set of 8','Set of 16'] } },
+];
+
+const SHOPS = [
+  { id:1, name:'ClayAndThyme', avatar:'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=120&h=120&fit=crop', banner:'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=1200&h=300&fit=crop', description:'Hand-thrown ceramics made in Portland, OR. Food-safe and built to last.', rating:4.9, reviews:219, policies:{ shipping:'Ships in 3–5 days. Packed with care in recycled materials.', returns:'14-day exchanges. Contact me first.', custom:'Yes! Message me for custom glaze requests.' } },
+  { id:2, name:'PetalForge', avatar:'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=120&h=120&fit=crop', banner:'https://images.unsplash.com/photo-1573408301185-9519f94f7a81?w=1200&h=300&fit=crop', description:'Resin and metalwork jewelry featuring real botanicals. Made in Denver, CO.', rating:5.0, reviews:99, policies:{} },
+  { id:3, name:'ThreadAndBlock', avatar:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=120&h=120&fit=crop', banner:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=300&fit=crop', description:'Hand-printed textiles and prints from a one-person studio in Asheville, NC.', rating:4.8, reviews:265, policies:{} },
+  { id:4, name:'GrainAndGrain', avatar:'https://images.unsplash.com/photo-1611486212355-d276af4581c0?w=120&h=120&fit=crop', banner:'https://images.unsplash.com/photo-1588278543327-63e65a8d5a5f?w=1200&h=300&fit=crop', description:'Reclaimed wood goods crafted in Vermont.', rating:4.8, reviews:62, policies:{} },
+  { id:5, name:'WickWitch', avatar:'https://images.unsplash.com/photo-1608181831718-c9fda686d4f8?w=120&h=120&fit=crop', banner:'https://images.unsplash.com/photo-1603905830740-0eef9c5e48d8?w=1200&h=300&fit=crop', description:'Natural beeswax candles and herbal bundles from Olympia, WA.', rating:4.6, reviews:204, policies:{} },
+  { id:6, name:'TimeCapsuleVintage', avatar:'https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?w=120&h=120&fit=crop', banner:'https://images.unsplash.com/photo-1495364141860-b0d03eccd065?w=1200&h=300&fit=crop', description:'Carefully sourced Mid-Century Modern pieces. Based in Chicago.', rating:4.8, reviews:88, policies:{} },
+  { id:7, name:'KnotAndWild', avatar:'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=120&h=120&fit=crop', banner:'https://images.unsplash.com/photo-1585320806297-9794b3e4aaae?w=1200&h=300&fit=crop', description:'Handmade macramé and fiber art from Austin, TX.', rating:5.0, reviews:72, policies:{} },
+  { id:8, name:'PaperCrane Studio', avatar:'https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=120&h=120&fit=crop', banner:'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=1200&h=300&fit=crop', description:'Letterpress printing and paper goods from Brooklyn, NY.', rating:4.7, reviews:38, policies:{} },
+];
+
+const ORDERS_DATA = [
+  { id:'#7821', item:'Sage Glaze Mug', buyer:'Sophie M.', total:'$38.00', status:'PENDING', date:'Jun 7' },
+  { id:'#7815', item:'Speckled Planter 5"', buyer:'Alex T.', total:'$44.00', status:'COMPLETED', date:'Jun 5' },
+  { id:'#7804', item:'Linen Tote — Botanical', buyer:'Robin K.', total:'$52.00', status:'COMPLETED', date:'Jun 5' },
+  { id:'#7796', item:'Terracotta Mug 16oz', buyer:'Jordan P.', total:'$38.00', status:'PENDING', date:'Jun 3' },
+  { id:'#7789', item:'Block Print Tote x2', buyer:'Morgan L.', total:'$104.00', status:'COMPLETED', date:'May 31' },
+  { id:'#7780', item:'Speckled Planter 4"', buyer:'Casey W.', total:'$40.00', status:'CANCELLED', date:'May 29' },
+];
+
+// ── STATE ──────────────────────────────────────────────
+let cart = [];
+let favorites = new Set();
+let currentUser = null;
+let searchQuery = '';
+let currentCat = 'all';
+
+// ── NAVIGATION ─────────────────────────────────────────
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name)?.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (name === 'home') renderHome();
+  if (name === 'search') renderSearch(PRODUCTS);
+  if (name === 'checkout') { goCheckoutStep(1); renderCheckout(); }
+}
+
+// ── HOME ───────────────────────────────────────────────
+function renderHome() {
+  renderProductGrid('featuredGrid', PRODUCTS.slice(0, 8));
+  renderProductGrid('newArrivalsGrid', [...PRODUCTS].reverse().slice(0, 4));
+  renderShops();
+}
+
+function renderShops() {
+  const el = document.getElementById('featuredShops');
+  el.innerHTML = SHOPS.slice(0, 6).map(s => `
+    <div class="shop-card" onclick="openShop(${s.id})">
+      <div class="shop-avatar" style="overflow:hidden;padding:0;"><img src="${s.avatar}" alt="${s.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" loading="lazy"></div>
+      <div class="shop-card-info">
+        <h4>${s.name}</h4>
+        <div class="shop-stars">${'⭐'.repeat(Math.floor(s.rating))} ${s.rating}</div>
+        <p>${s.reviews} reviews · ${PRODUCTS.filter(p=>p.shopId===s.id).length} listings</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── PRODUCT GRID ───────────────────────────────────────
+function renderProductGrid(containerId, products) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (!products.length) {
+    el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--muted);font-size:14px;">No items found. Try a different search or category.</div>';
+    return;
+  }
+  el.innerHTML = products.map(p => productCardHTML(p)).join('');
+}
+
+function productCardHTML(p) {
+  const faved = favorites.has(p.id);
+  const badgeHtml = p.badge ? `<div class="badge ${p.badgeType||''}">${p.badge}</div>` : '';
+  return `
+    <div class="product-card" onclick="openProduct(${p.id})">
+      <div class="product-card-img" style="position:relative;">
+        <img src="${p.img}" alt="${p.name}" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;background:var(--parchment);" loading="lazy" onerror="this.style.background='var(--parchment)';this.style.minHeight='200px';">
+        ${badgeHtml}
+        <button class="fav-btn ${faved?'active':''}" onclick="toggleFav(event,${p.id})">${faved?'❤️':'🤍'}</button>
+      </div>
+      <div class="product-card-body">
+        <div class="product-card-shop">${p.shop}</div>
+        <div class="product-card-name">${p.name}</div>
+        <div class="product-card-price">$${p.price}.00</div>
+        <div class="product-card-rating"><span class="stars">${'⭐'.repeat(Math.floor(p.rating))}</span> ${p.rating} (${p.reviews})</div>
+      </div>
+    </div>`;
+}
+
+// ── SEARCH ─────────────────────────────────────────────
+function doSearch() {
+  searchQuery = document.getElementById('searchInput').value.toLowerCase();
+  currentCat = 'all';
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  document.querySelector('.cat-pill').classList.add('active');
+  showView('search');
+}
+
+function renderSearch(products) {
+  const q = searchQuery;
+  let filtered = products;
+  if (q) filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.tags.some(t => t.includes(q)) || p.category.includes(q));
+  if (currentCat !== 'all') filtered = filtered.filter(p => p.category === currentCat);
+  document.getElementById('resultsCount').textContent = `${filtered.length} item${filtered.length!==1?'s':''} found${q ? ` for "${q}"` : ''}`;
+  renderProductGrid('searchGrid', filtered);
+}
+
+function filterCat(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  showView('search');
+}
+
+function applyFilters() {
+  const min = parseFloat(document.getElementById('priceMin').value) || 0;
+  const max = parseFloat(document.getElementById('priceMax').value) || Infinity;
+  const filtered = PRODUCTS.filter(p => p.price >= min && p.price <= max);
+  renderProductGrid('searchGrid', filtered);
+  document.getElementById('resultsCount').textContent = `${filtered.length} items in price range`;
+  showToast('Filters applied');
+}
+
+function sortResults(val) {
+  let sorted = [...PRODUCTS];
+  if (val === 'price-asc') sorted.sort((a,b) => a.price - b.price);
+  if (val === 'price-desc') sorted.sort((a,b) => b.price - a.price);
+  if (val === 'rating') sorted.sort((a,b) => b.rating - a.rating);
+  if (val === 'recent') sorted.reverse();
+  renderProductGrid('searchGrid', sorted);
+}
+
+// ── PRODUCT DETAIL ─────────────────────────────────────
+function openProduct(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  if (!p) return;
+  const shop = SHOPS.find(s => s.id === p.shopId);
+  const vars = Object.entries(p.variations || {}).map(([k,vals]) => `
+    <div class="variation-group">
+      <div class="variation-label">${k}</div>
+      <div class="variation-options">
+        ${vals.map((v,i) => `<button class="variation-pill ${i===0?'active':''}" onclick="selectVariation(this)">${v}</button>`).join('')}
+      </div>
+    </div>`).join('');
+  
+  document.getElementById('productDetailContent').innerHTML = `
+    <div class="detail-imgs">
+      <div class="detail-main-img" style="font-size:0;background:var(--parchment);"><img id="detailMainImg" src="${p.imgs[0]}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--r-lg);" loading="eager"></div>
+      <div class="detail-thumbs">
+        ${p.imgs.map((src,i) => `<div class="detail-thumb ${i===0?'active':''}" onclick="selectThumb(this,'${src}')" style="padding:0;overflow:hidden;"><img src="${src}" alt="view ${i+1}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;" loading="lazy"></div>`).join('')}
+      </div>
+    </div>
+    <div class="detail-info">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">${p.category}</div>
+      <h1>${p.name}</h1>
+      <span class="detail-shop-link" onclick="openShop(${p.shopId})">by ${p.shop} →</span>
+      <div class="detail-rating">
+        <span class="stars">${'⭐'.repeat(Math.floor(p.rating))}</span>
+        <span>${p.rating} · ${p.reviews} reviews</span>
+        <span>·</span>
+        <span>${p.stock} available</span>
+      </div>
+      <div class="detail-price">$${p.price}.00</div>
+      ${vars}
+      <div class="qty-row">
+        <div class="qty-control">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <input class="qty-num" type="number" value="1" min="1" max="${p.stock}" id="qtyInput" readonly>
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+        <span class="qty-label">(${p.stock} in stock)</span>
+      </div>
+      <button class="btn-add-cart" onclick="addToCart(${p.id})">Add to Cart</button>
+      <button class="btn-fav-large" onclick="toggleFavDirect(${p.id}, this)">${favorites.has(p.id)?'❤️ Saved to Favorites':'🤍 Save to Favorites'}</button>
+      <hr class="detail-divider">
+      <div class="detail-desc">
+        <h3>About this item</h3>
+        <p>${p.desc}</p>
+      </div>
+      <div class="seller-box" onclick="openShop(${p.shopId})">
+        <div class="shop-avatar" style="width:44px;height:44px;overflow:hidden;padding:0;"><img src="${shop?.avatar||''}" alt="${p.shop}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" loading="lazy"></div>
+        <div class="seller-box-info">
+          <h4>${p.shop}</h4>
+          <p>⭐ ${shop?.rating} · ${shop?.reviews} reviews</p>
+        </div>
+        <button class="btn-msg" onclick="event.stopPropagation();showToast('Message sent to ${p.shop}! ✉️')">Message</button>
+      </div>
+    </div>`;
+
+  showView('product');
+}
+
+function selectThumb(el, src) {
+  document.querySelectorAll('.detail-thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  if (src) document.getElementById('detailMainImg').src = src;
+}
+
+function selectVariation(el) {
+  el.closest('.variation-options').querySelectorAll('.variation-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function changeQty(delta) {
+  const inp = document.getElementById('qtyInput');
+  if (!inp) return;
+  let val = parseInt(inp.value) + delta;
+  val = Math.max(1, Math.min(val, parseInt(inp.max)));
+  inp.value = val;
+}
+
+// ── SHOP STOREFRONT ────────────────────────────────────
+function openShop(shopId) {
+  const shop = SHOPS.find(s => s.id === shopId);
+  if (!shop) return;
+  const products = PRODUCTS.filter(p => p.shopId === shopId);
+
+  document.getElementById('shopBanner').style.background = `url('${shop.banner}') center/cover no-repeat`;
+  document.getElementById('shopBanner').style.position = 'relative';
+  document.getElementById('shopBanner').insertAdjacentHTML('afterbegin', '<div style="position:absolute;inset:0;background:rgba(44,24,16,.45);"></div>');
+  document.getElementById('shopBannerMeta').innerHTML = `
+    <div class="shop-banner-avatar" style="overflow:hidden;padding:0;"><img src="${shop.avatar}" alt="${shop.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" loading="lazy"></div>
+    <div class="shop-banner-info" style="position:relative;z-index:1;">
+      <h1>${shop.name}</h1>
+      <p>${products.length} listings</p>
+      <div class="shop-banner-rating">⭐ ${shop.rating} · ${shop.reviews} reviews</div>
+    </div>`;
+  document.getElementById('shopBannerMeta').style.position = 'relative';
+  document.getElementById('shopBannerMeta').style.zIndex = '1';
+
+  document.getElementById('shopAbout').innerHTML = `
+    <h3>About</h3>
+    <p>${shop.description}</p>`;
+
+  const pol = shop.policies;
+  document.getElementById('shopPolicies').innerHTML = `
+    <h3>Shop Policies</h3>
+    ${pol.shipping ? `<div class="policy-item">📦 <span>${pol.shipping}</span></div>` : ''}
+    ${pol.returns ? `<div class="policy-item">↩️ <span>${pol.returns}</span></div>` : ''}
+    ${pol.custom ? `<div class="policy-item">✏️ <span>${pol.custom}</span></div>` : ''}
+    ${!pol.shipping ? '<div class="policy-item">ℹ️ <span>Contact seller for policy details.</span></div>' : ''}`;
+
+  document.getElementById('shopListingsTitle').textContent = `${products.length} Listings from ${shop.name}`;
+  renderProductGrid('shopGrid', products);
+  showView('shop');
+}
+
+// ── CART ───────────────────────────────────────────────
+let selectedShipping = 'std';
+let couponDiscount = 0;
+
+function addToCart(productId) {
+  const p = PRODUCTS.find(x => x.id === productId);
+  if (!p) return;
+  const qty = parseInt(document.getElementById('qtyInput')?.value || 1);
+  const existing = cart.find(i => i.id === productId);
+  if (existing) existing.qty += qty;
+  else cart.push({ ...p, qty });
+  updateCartBadge();
+  showToast(`${p.name} added to cart 🛍`);
+  renderCartPanel();
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(i => i.id !== id);
+  updateCartBadge();
+  renderCartPanel();
+  renderCheckout();
+}
+
+function changeCartQty(id, delta) {
+  const item = cart.find(i => i.id === id);
+  if (!item) return;
+  item.qty = Math.max(1, Math.min(item.qty + delta, item.stock));
+  updateCartBadge();
+  renderCartPanel();
+  renderCheckout();
+}
+
+function updateCartBadge() {
+  const total = cart.reduce((s,i) => s + i.qty, 0);
+  document.getElementById('cartCountBadge').textContent = total;
+  document.getElementById('cartHeaderCount').textContent = total;
+}
+
+function openCart() {
+  document.getElementById('cartOverlay').classList.add('open');
+  document.getElementById('cartPanel').classList.add('open');
+  renderCartPanel();
+}
+function closeCart() {
+  document.getElementById('cartOverlay').classList.remove('open');
+  document.getElementById('cartPanel').classList.remove('open');
+}
+
+function renderCartPanel() {
+  const el = document.getElementById('cartItemsList');
+  const FREE_THRESHOLD = 35;
+
+  if (!cart.length) {
+    el.innerHTML = '<div class="cart-empty"><div class="cart-empty-icon">🛍</div><p>Your cart is empty.<br>Find something you love!</p></div>';
+    document.getElementById('cartTotal').textContent = '$0.00';
+    document.getElementById('cartSubtotal').textContent = '$0.00';
+    document.getElementById('freeShippingBar').style.display = 'none';
+    return;
+  }
+
+  // Group by shop
+  const shops = {};
+  cart.forEach(i => {
+    if (!shops[i.shop]) shops[i.shop] = [];
+    shops[i.shop].push(i);
+  });
+
+  let html = '';
+  Object.entries(shops).forEach(([shopName, items]) => {
+    html += `<div class="cart-shop-group">
+      <div class="cart-shop-label">${shopName}</div>`;
+    items.forEach(i => {
+      html += `<div class="cart-item">
+        <div class="cart-item-img" style="overflow:hidden;padding:0;border-radius:8px;"><img src="${i.img}" alt="${i.name}" style="width:64px;height:64px;object-fit:cover;display:block;" loading="lazy"></div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${i.name}</div>
+          <div class="cart-item-shop">${i.shop}</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">
+            <div class="cart-qty-ctrl">
+              <button class="cart-qty-btn" onclick="changeCartQty(${i.id},-1)">−</button>
+              <span class="cart-qty-num">${i.qty}</span>
+              <button class="cart-qty-btn" onclick="changeCartQty(${i.id},1)">+</button>
+            </div>
+            <div class="cart-item-price">$${(i.price * i.qty).toFixed(2)}</div>
+          </div>
+          <button class="cart-item-remove" onclick="removeFromCart(${i.id})">Remove</button>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  el.innerHTML = html;
+
+  const subtotal = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  const shipping = subtotal >= FREE_THRESHOLD ? 0 : 4.99;
+  document.getElementById('cartSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+  document.getElementById('cartTotal').textContent = `$${(subtotal + shipping).toFixed(2)}`;
+
+  // Free shipping bar
+  const bar = document.getElementById('freeShippingBar');
+  bar.style.display = 'block';
+  const pct = Math.min((subtotal / FREE_THRESHOLD) * 100, 100);
+  document.getElementById('freeShippingFill').style.width = pct + '%';
+  if (subtotal >= FREE_THRESHOLD) {
+    document.getElementById('freeShippingMsg').textContent = '🎉 Your order qualifies for';
+  } else {
+    const left = (FREE_THRESHOLD - subtotal).toFixed(2);
+    document.getElementById('freeShippingMsg').textContent = `Add $${left} more for`;
+  }
+}
+
+function goCheckout() {
+  closeCart();
+  showView('checkout');
+}
+
+// ── CHECKOUT MULTI-STEP ────────────────────────────────
+let checkoutStep = 1;
+
+function goCheckoutStep(step) {
+  checkoutStep = step;
+  document.querySelectorAll('.co-step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('coPanel' + step)?.classList.add('active');
+  // Update breadcrumb
+  [1,2,3,4].forEach(n => {
+    const el = document.getElementById('coStep' + n);
+    el.classList.remove('active','done');
+    if (n === step) el.classList.add('active');
+    else if (n < step) el.classList.add('done');
+  });
+  if (step === 1) renderCheckoutCartReview();
+  if (step === 4) renderReviewStep();
+  renderCheckout();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderCheckoutCartReview() {
+  const el = document.getElementById('checkoutCartReview');
+  if (!el) return;
+  if (!cart.length) { el.innerHTML = '<p style="color:var(--muted);font-size:13px;">Your cart is empty.</p>'; return; }
+  const shops = {};
+  cart.forEach(i => { if (!shops[i.shop]) shops[i.shop] = []; shops[i.shop].push(i); });
+  let html = '';
+  Object.entries(shops).forEach(([shopName, items]) => {
+    html += `<div style="margin-bottom:16px;"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">${shopName}</div>`;
+    items.forEach(i => {
+      html += `<div style="display:flex;gap:12px;align-items:center;margin-bottom:10px;">
+        <img src="${i.img}" style="width:52px;height:52px;object-fit:cover;border-radius:6px;flex-shrink:0;" loading="lazy">
+        <div style="flex:1;font-size:13px;">
+          <div style="font-weight:500;">${i.name}</div>
+          <div style="color:var(--muted);font-size:12px;">Qty: ${i.qty}</div>
+        </div>
+        <div style="font-weight:700;font-size:14px;color:var(--sienna);">$${(i.price*i.qty).toFixed(2)}</div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function renderReviewStep() {
+  const nameEl = document.getElementById('coName');
+  const addrEl = document.getElementById('coAddr');
+  const cityEl = document.getElementById('coCity');
+  const stateEl = document.getElementById('coState');
+  const zipEl = document.getElementById('coZip');
+  const cardEl = document.getElementById('coCard');
+  const name = nameEl?.value || 'Not entered';
+  const addr = addrEl?.value || '';
+  const city = cityEl?.value || '';
+  const state = stateEl?.value || '';
+  const zip = zipEl?.value || '';
+  const card = cardEl?.value ? '•••• •••• •••• ' + (cardEl.value.replace(/\s/g,'').slice(-4) || '####') : 'Not entered';
+  const ship = selectedShipping === 'exp' ? 'Expedited (2–3 days)' : 'Standard (5–8 days)';
+  document.getElementById('reviewShippingBlock').innerHTML = `<div style="font-weight:600;margin-bottom:6px;">📦 Shipping to</div><div style="color:var(--bark);">${name}<br>${addr}${addr&&city?', ':''} ${city} ${state} ${zip}</div><div style="margin-top:6px;color:var(--muted);">${ship}</div>`;
+  document.getElementById('reviewPayBlock').innerHTML = `<div style="font-weight:600;margin-bottom:6px;">💳 Payment</div><div style="color:var(--bark);">${card}</div>`;
+  renderCheckoutItemsList();
+}
+
+function renderCheckoutItemsList() {
+  const el = document.getElementById('checkoutItemsList');
+  if (!el) return;
+  el.innerHTML = cart.map(i => `<div class="summary-line"><span>${i.name} × ${i.qty}</span><span>$${(i.price*i.qty).toFixed(2)}</span></div>`).join('');
+}
+
+function renderCheckout() {
+  const subtotal = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  const shipCost = selectedShipping === 'exp' ? 12.99 : (subtotal >= 35 ? 0 : 4.99);
+  const tax = subtotal * 0.08;
+  const total = subtotal + shipCost + tax - couponDiscount;
+
+  const subEl = document.getElementById('summarySubtotal');
+  const shipEl = document.getElementById('summaryShipping');
+  const taxEl = document.getElementById('summaryTax');
+  const totEl = document.getElementById('summaryTotal');
+  if (subEl) subEl.textContent = `$${subtotal.toFixed(2)}`;
+  if (shipEl) shipEl.textContent = checkoutStep === 1 ? '—' : (shipCost === 0 ? 'FREE' : `$${shipCost.toFixed(2)}`);
+  if (taxEl) taxEl.textContent = `$${tax.toFixed(2)}`;
+  if (totEl) totEl.textContent = `$${Math.max(0, total).toFixed(2)}`;
+
+  // sidebar item list
+  const sil = document.getElementById('summaryItemsList');
+  if (sil) sil.innerHTML = cart.map(i => `<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;"><img src="${i.img}" style="width:44px;height:44px;object-fit:cover;border-radius:6px;flex-shrink:0;" loading="lazy"><div style="flex:1;font-size:12px;"><div style="font-weight:500;">${i.name}</div><div style="color:var(--muted);">Qty ${i.qty}</div></div><div style="font-size:13px;font-weight:700;color:var(--sienna);">$${(i.price*i.qty).toFixed(2)}</div></div>`).join('');
+
+  const freeEl = document.getElementById('summaryFreeShip');
+  if (freeEl) freeEl.style.display = (subtotal >= 35 && selectedShipping === 'std') ? 'block' : 'none';
+
+  // update std ship price label
+  const stdLabel = document.getElementById('shipStdPrice');
+  if (stdLabel) stdLabel.textContent = subtotal >= 35 ? 'FREE' : '$4.99';
+}
+
+function selectShipping(type, el) {
+  selectedShipping = type;
+  document.querySelectorAll('.shipping-option').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  renderCheckout();
+}
+
+function selectPayMethod(btn, method) {
+  document.querySelectorAll('.pay-method-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('payCardForm').style.display = method === 'card' ? 'block' : 'none';
+  document.getElementById('payAltMsg').style.display = method === 'card' ? 'none' : 'block';
+}
+
+function applyCoupon() {
+  const code = document.getElementById('couponInput').value.trim().toUpperCase();
+  if (code === 'SKETCHY10') {
+    const subtotal = cart.reduce((s,i) => s + i.price * i.qty, 0);
+    couponDiscount = subtotal * 0.10;
+    showToast('10% discount applied! 🎉');
+    renderCheckout();
+  } else if (code === 'FREESHIP') {
+    selectedShipping = 'free';
+    showToast('Free shipping applied! 🚚');
+    renderCheckout();
+  } else {
+    showToast('Code not recognized');
+  }
+}
+
+function placeOrder() {
+  const subtotal = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  const shipCost = selectedShipping === 'exp' ? 12.99 : (subtotal >= 35 ? 0 : 4.99);
+  const tax = subtotal * 0.08;
+  const total = Math.max(0, subtotal + shipCost + tax - couponDiscount);
+
+  // Populate confirmation
+  const items = document.getElementById('confirmOrderItems');
+  if (items) items.innerHTML = cart.map(i => `<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>${i.name} × ${i.qty}</span><span style="font-weight:600;">$${(i.price*i.qty).toFixed(2)}</span></div>`).join('');
+  const ctot = document.getElementById('confirmTotal');
+  if (ctot) ctot.textContent = `$${total.toFixed(2)}`;
+
+  cart = [];
+  couponDiscount = 0;
+  selectedShipping = 'std';
+  updateCartBadge();
+  checkoutStep = 1;
+  showView('order-confirm');
+}
+
+// ── FAVORITES ──────────────────────────────────────────
+function toggleFav(e, id) {
+  e.stopPropagation();
+  if (favorites.has(id)) { favorites.delete(id); showToast('Removed from favorites'); }
+  else { favorites.add(id); showToast('Saved to favorites ❤️'); }
+  // re-render wherever we are
+  const allCards = document.querySelectorAll('.product-card');
+  allCards.forEach(card => {
+    const btn = card.querySelector('.fav-btn');
+    if (!btn) return;
+    const cardId = parseInt(card.getAttribute('data-id'));
+  });
+  // Quick re-render approach
+  renderHome();
+}
+
+function toggleFavDirect(id, btn) {
+  if (favorites.has(id)) { favorites.delete(id); btn.textContent = '🤍 Save to Favorites'; showToast('Removed from favorites'); }
+  else { favorites.add(id); btn.textContent = '❤️ Saved to Favorites'; showToast('Saved to favorites ❤️'); }
+}
+
+// ── SELLER DASHBOARD ───────────────────────────────────
+function showDashPanel(name, el) {
+  document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('dash-' + name)?.classList.add('active');
+  document.querySelectorAll('.dash-nav-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  if (name === 'orders' || name === 'overview') renderDashOrders();
+  if (name === 'listings') renderListingsTable();
+  if (name === 'messages') renderMessages();
+}
+
+function renderDashOrders() {
+  const tbody = document.getElementById('dashOrdersTable');
+  if (tbody) tbody.innerHTML = ORDERS_DATA.slice(0,5).map(o => `
+    <tr>
+      <td style="font-weight:600;color:var(--sienna);">${o.id}</td>
+      <td>${o.item}</td>
+      <td>${o.buyer}</td>
+      <td style="font-weight:600;">${o.total}</td>
+      <td><span class="status-pill ${o.status.toLowerCase()}">${o.status}</span></td>
+      <td style="color:var(--muted);">${o.date}</td>
+    </tr>`).join('');
+
+  const full = document.getElementById('fullOrdersTable');
+  if (full) full.innerHTML = ORDERS_DATA.map(o => `
+    <tr>
+      <td style="font-weight:600;color:var(--sienna);">${o.id}</td>
+      <td>${o.item}</td>
+      <td style="text-align:center;">${o.status==='PENDING'?1:o.status==='COMPLETED'?2:1}</td>
+      <td>${o.buyer}</td>
+      <td style="font-weight:600;">${o.total}</td>
+      <td><span class="status-pill ${o.status.toLowerCase()}">${o.status}</span></td>
+      <td>
+        ${o.status==='PENDING'?`<button onclick="markShipped('${o.id}')" style="background:var(--sage);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600;">Mark Shipped</button>`:''}
+        <button onclick="showToast('Packing slip for ${o.id} ready 🖨️')" style="background:var(--cream);color:var(--bark);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;">Print Slip</button>
+      </td>
+    </tr>`).join('');
+}
+
+function markShipped(id) {
+  const o = ORDERS_DATA.find(x => x.id === id);
+  if (o) o.status = 'COMPLETED';
+  renderDashOrders();
+  showToast(`Order ${id} marked as shipped 📦`);
+}
+
+function filterOrders(status, btn) {
+  document.querySelectorAll('#dash-orders button').forEach(b => {
+    b.style.background = 'transparent';
+  });
+  const full = document.getElementById('fullOrdersTable');
+  const data = status === 'all' ? ORDERS_DATA : ORDERS_DATA.filter(o => o.status === status);
+  full.innerHTML = data.map(o => `
+    <tr>
+      <td style="font-weight:600;color:var(--sienna);">${o.id}</td>
+      <td>${o.item}</td>
+      <td>1</td>
+      <td>${o.buyer}</td>
+      <td style="font-weight:600;">${o.total}</td>
+      <td><span class="status-pill ${o.status.toLowerCase()}">${o.status}</span></td>
+      <td>${o.status==='PENDING'?`<button onclick="markShipped('${o.id}')" style="background:var(--sage);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600;">Mark Shipped</button>`:''}</td>
+    </tr>`).join('');
+}
+
+function renderListingsTable() {
+  const tbody = document.getElementById('listingsTable');
+  if (!tbody) return;
+  tbody.innerHTML = PRODUCTS.filter(p => p.shopId === 1).concat(PRODUCTS.slice(0,3)).map(p => `
+    <tr>
+      <td style="display:flex;align-items:center;gap:10px;">
+        <img src="${p.img}" alt="${p.name}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;" loading="lazy">
+        <span style="font-size:13px;font-weight:500;">${p.name}</span>
+      </td>
+      <td style="font-weight:600;">$${p.price}.00</td>
+      <td>${p.stock} left</td>
+      <td><span class="status-pill ${p.stock>0?'shipped':'cancelled'}">${p.stock>0?'Active':'Sold Out'}</span></td>
+      <td>
+        <button onclick="showToast('Edit mode coming in v2 ✏️')" style="background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--bark);cursor:pointer;margin-right:4px;">Edit</button>
+        <button onclick="showToast('Listing duplicated! 📋')" style="background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--bark);cursor:pointer;">Duplicate</button>
+      </td>
+    </tr>`).join('');
+}
+
+const MESSAGES = [
+  { buyer:'Sophie M.', last:'Can I get this in forest green?', time:'2h ago', emoji:'💬' },
+  { buyer:'Alex T.', last:'When will my order ship?', time:'1d ago', emoji:'💬' },
+  { buyer:'Robin K.', last:'Thank you! Love the tote 💕', time:'3d ago', emoji:'💬' },
+];
+
+function renderMessages() {
+  const el = document.getElementById('messageThreads');
+  el.innerHTML = MESSAGES.map((m, i) => `
+    <div style="padding:12px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;${i===0?'background:var(--cream);':''}" onmouseover="this.style.background='var(--linen)'" onmouseout="this.style.background='${i===0?'var(--cream)':'transparent'}'" onclick="openThread(${i})">
+      <div style="font-size:13px;font-weight:600;margin-bottom:3px;">${m.buyer}</div>
+      <div style="font-size:11px;color:var(--muted);">${m.last}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px;">${m.time}</div>
+    </div>`).join('');
+  openThread(0);
+}
+
+function openThread(i) {
+  const m = MESSAGES[i];
+  document.getElementById('msgHeader').textContent = m.buyer;
+  document.getElementById('msgBody').innerHTML = `
+    <div style="align-self:flex-start;background:var(--cream);border-radius:12px 12px 12px 0;padding:10px 14px;max-width:70%;font-size:13px;">${m.last}</div>
+    <div style="align-self:flex-end;background:var(--sienna);color:#fff;border-radius:12px 12px 0 12px;padding:10px 14px;max-width:70%;font-size:13px;">Hi! Yes, I can do that. Let me check if I have the glaze in stock 🎨</div>
+    <div style="align-self:flex-start;background:var(--cream);border-radius:12px 12px 12px 0;padding:10px 14px;max-width:70%;font-size:13px;">That would be amazing, thank you! No rush.</div>`;
+}
+
+function sendMessage() {
+  const inp = document.getElementById('msgInput');
+  const msg = inp.value.trim();
+  if (!msg) return;
+  const body = document.getElementById('msgBody');
+  body.innerHTML += `<div style="align-self:flex-end;background:var(--sienna);color:#fff;border-radius:12px 12px 0 12px;padding:10px 14px;max-width:70%;font-size:13px;">${msg}</div>`;
+  inp.value = '';
+  body.scrollTop = body.scrollHeight;
+}
+
+// ── NEW LISTING ────────────────────────────────────────
+function createListing() {
+  const title = document.getElementById('newListingTitle').value.trim();
+  const price = document.getElementById('newListingPrice').value;
+  if (!title || !price) { showToast('Please fill in title and price'); return; }
+  PRODUCTS.push({ id: PRODUCTS.length+1, name: title, shop:'ClayAndThyme', shopId:1, price:parseFloat(price), stock:parseInt(document.getElementById('newListingQty').value||1), category:'ceramics', badge:'New', badgeType:'sage', img:`https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&h=600&fit=crop`, imgs:['https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&h=600&fit=crop'], rating:5.0, reviews:0, desc: document.getElementById('newListingDesc').value || 'No description yet.', tags:[], variations:{} });
+  showToast(`"${title}" listed successfully ✅`);
+  document.getElementById('newListingTitle').value = '';
+  document.getElementById('newListingPrice').value = '';
+  document.getElementById('newListingDesc').value = '';
+  showDashPanel('listings', null);
+  renderListingsTable();
+}
+
+// ── TOGGLE SWITCH ──────────────────────────────────────
+function toggleSwitch(id) {
+  document.getElementById(id).classList.toggle('on');
+}
+
+// ── AUTH ───────────────────────────────────────────────
+function openAuth() {
+  document.getElementById('authModal').classList.add('open');
+}
+function closeAuth() {
+  document.getElementById('authModal').classList.remove('open');
+}
+function switchAuthTab(tab, btn) {
+  document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  const isRegister = tab === 'register';
+  document.getElementById('authNameRow').style.display = isRegister ? 'block' : 'none';
+  document.getElementById('authRoleRow').style.display = isRegister ? 'block' : 'none';
+  document.getElementById('authSubmitBtn').textContent = isRegister ? 'Create Account' : 'Sign In';
+}
+function doAuth() {
+  const email = document.getElementById('authEmail').value.trim();
+  if (!email) { showToast('Please enter your email'); return; }
+  const isRegister = document.getElementById('authSubmitBtn').textContent === 'Create Account';
+  currentUser = { email, role: document.getElementById('authRole')?.value || 'BUYER' };
+  document.getElementById('authBtn').textContent = email.split('@')[0];
+  document.getElementById('authBtn').onclick = () => showToast(`Signed in as ${email}`);
+  closeAuth();
+  showToast(isRegister ? `Welcome to Sketchy! 🎉` : `Welcome back! 👋`);
+}
+function socialLogin(provider) {
+  currentUser = { email: `user@${provider.toLowerCase()}.com`, role:'BUYER' };
+  document.getElementById('authBtn').textContent = 'You';
+  closeAuth();
+  showToast(`Signed in with ${provider} ✓`);
+}
+
+// ── TOAST ──────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── INIT ───────────────────────────────────────────────
+renderHome();
+renderSearch(PRODUCTS);
+renderDashOrders();
+renderListingsTable();
+</script>
+</body>
+</html>
