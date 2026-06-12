@@ -9,7 +9,7 @@
 <style>
   /* ── TOKENS ──────────────────────────────────────────────────── */
   :root {
-    --linen:      #FAF7F2; 
+    --linen:      #FAF7F2;
     --cream:      #F0EBE3;
     --parchment:  #E8DFD2;
     --walnut:     #2C1810;
@@ -1174,6 +1174,125 @@
     border-top: 1px solid var(--border);
   }
   .cart-shop-label:first-child { border-top: none; }
+
+  /* ── SAVE FOR LATER ──────────────────────────────────────────── */
+  .saved-later-section { padding: 16px 22px; border-top: 1px solid var(--border); background: var(--linen); }
+  .saved-later-section h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 10px; }
+  .saved-item { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; font-size: 12px; }
+  .saved-item img { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+  .saved-item-actions { display: flex; gap: 8px; margin-top: 3px; }
+  .saved-item-btn { background: none; border: none; font-size: 11px; color: var(--sienna); cursor: pointer; padding: 0; font-weight: 600; }
+  .saved-item-btn:hover { text-decoration: underline; }
+
+  /* ── BREADCRUMB ──────────────────────────────────────────────── */
+  .breadcrumb { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 14px; }
+  .breadcrumb span { cursor: pointer; transition: color .15s; }
+  .breadcrumb span:hover { color: var(--sienna); text-decoration: underline; }
+  .breadcrumb .bc-sep { cursor: default; }
+  .breadcrumb span:last-child { color: var(--walnut); font-weight: 500; cursor: default; }
+  .breadcrumb span:last-child:hover { text-decoration: none; color: var(--walnut); }
+
+  /* ── REVIEWS ─────────────────────────────────────────────────── */
+  .review-card { padding: 18px 0; border-bottom: 1px solid var(--border); }
+  .review-card:last-child { border-bottom: none; }
+  .review-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .review-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--parchment); font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 600; color: var(--bark); }
+  .review-meta { flex: 1; }
+  .review-meta .rev-name { font-size: 13px; font-weight: 600; }
+  .review-meta .rev-date { font-size: 11px; color: var(--muted); }
+  .review-stars { font-size: 13px; color: #E8A030; }
+  .review-verified { font-size: 11px; color: var(--sage); font-weight: 600; display: flex; align-items: center; gap: 4px; margin-top: 2px; }
+  .review-body { font-size: 13px; color: var(--bark); line-height: 1.7; margin-bottom: 8px; }
+  .review-item-img { width: 52px; height: 52px; object-fit: cover; border-radius: 6px; margin-top: 6px; }
+  .review-helpful { font-size: 11px; color: var(--muted); }
+  .review-helpful button { background: none; border: 1px solid var(--border); border-radius: 4px; padding: 3px 8px; font-size: 11px; cursor: pointer; color: var(--muted); margin-left: 8px; }
+  .review-helpful button:hover { border-color: var(--sienna); color: var(--sienna); }
+
+  /* ── URGENCY NUDGES ──────────────────────────────────────────── */
+  .urgency-badge { font-size: 12px; font-weight: 600; color: #B91C1C; background: #FEE2E2; border-radius: 5px; padding: 4px 10px; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 10px; }
+  .in-cart-nudge { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 5px; margin-bottom: 10px; }
+  .delivery-est { font-size: 13px; color: var(--bark); background: var(--cream); border-radius: 7px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+
+  /* ── FILTER CHIPS ────────────────────────────────────────────── */
+  .active-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; align-items: center; }
+  .filter-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--walnut); color: var(--parchment); border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 500; cursor: pointer; transition: background .15s; }
+  .filter-chip:hover { background: var(--bark); }
+  .filter-chip .chip-x { font-size: 14px; line-height: 1; }
+  .clear-all-chip { font-size: 12px; color: var(--sienna); cursor: pointer; font-weight: 600; }
+  .clear-all-chip:hover { text-decoration: underline; }
+
+  /* ── RECENTLY VIEWED TRAY ────────────────────────────────────── */
+  .recently-viewed-tray {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid var(--border);
+    padding: 10px 24px;
+    z-index: 90;
+    display: none;
+    box-shadow: 0 -4px 16px var(--shadow);
+  }
+  .recently-viewed-tray.show { display: block; }
+  .rv-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 14px; }
+  .rv-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; white-space: nowrap; }
+  .rv-items { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+  .rv-items::-webkit-scrollbar { display: none; }
+  .rv-item { flex-shrink: 0; cursor: pointer; }
+  .rv-item img { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; border: 2px solid transparent; transition: border-color .15s; display: block; }
+  .rv-item img:hover { border-color: var(--sienna); }
+  .rv-close { margin-left: auto; background: none; border: none; font-size: 18px; color: var(--muted); cursor: pointer; flex-shrink: 0; }
+
+  /* ── MORE FROM SHOP / ALSO BOUGHT ───────────────────────────── */
+  .mini-product-scroll { display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+  .mini-product-scroll::-webkit-scrollbar { display: none; }
+  .mini-product-card { flex-shrink: 0; width: 160px; cursor: pointer; background: #fff; border-radius: var(--r); overflow: hidden; box-shadow: 0 2px 8px var(--shadow); transition: transform .15s; }
+  .mini-product-card:hover { transform: translateY(-3px); }
+  .mini-product-card img { width: 100%; height: 140px; object-fit: cover; display: block; }
+  .mini-product-card-body { padding: 8px 10px; }
+  .mini-product-card-name { font-size: 12px; font-weight: 500; color: var(--walnut); line-height: 1.3; margin-bottom: 3px; }
+  .mini-product-card-price { font-size: 13px; font-weight: 700; color: var(--sienna); }
+
+  /* ── STAR SELLER BADGE ───────────────────────────────────────── */
+  .star-seller-badge { display: inline-flex; align-items: center; gap: 5px; background: #FEF3CD; color: #92600A; border-radius: 5px; padding: 4px 10px; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+
+  /* ── CATEGORY IMAGE TILES ────────────────────────────────────── */
+  .cat-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+  .cat-tile { border-radius: var(--r-lg); overflow: hidden; cursor: pointer; position: relative; aspect-ratio: 1; transition: transform .2s; }
+  .cat-tile:hover { transform: scale(1.03); }
+  .cat-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cat-tile-label { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(44,24,16,.75)); color: #fff; font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 600; padding: 18px 12px 10px; }
+
+  /* ── FOLLOW SHOP BUTTON ──────────────────────────────────────── */
+  .btn-follow { background: #fff; border: 1.5px solid var(--border); border-radius: 7px; padding: 8px 18px; font-size: 13px; font-weight: 600; color: var(--bark); cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 6px; }
+  .btn-follow:hover { border-color: var(--sienna); color: var(--sienna); }
+  .btn-follow.following { background: var(--sienna); color: #fff; border-color: var(--sienna); }
+
+  /* ── GRID / LIST TOGGLE ──────────────────────────────────────── */
+  .view-toggle { display: flex; gap: 4px; }
+  .view-toggle-btn { width: 34px; height: 34px; border: 1.5px solid var(--border); border-radius: 6px; background: #fff; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; transition: all .15s; }
+  .view-toggle-btn.active { background: var(--walnut); color: var(--parchment); border-color: var(--walnut); }
+
+  /* ── LIST VIEW CARDS ─────────────────────────────────────────── */
+  .product-list { display: flex; flex-direction: column; gap: 14px; }
+  .product-list-card { background: #fff; border-radius: var(--r-lg); box-shadow: 0 2px 8px var(--shadow); display: flex; gap: 16px; padding: 14px; cursor: pointer; transition: box-shadow .2s; align-items: flex-start; }
+  .product-list-card:hover { box-shadow: 0 6px 20px var(--shadow-md); }
+  .product-list-card img { width: 110px; height: 110px; object-fit: cover; border-radius: 10px; flex-shrink: 0; }
+  .product-list-info { flex: 1; }
+  .product-list-info .shop-name { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
+  .product-list-info h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; line-height: 1.3; }
+  .product-list-info .price { font-size: 18px; font-weight: 700; color: var(--sienna); }
+  .product-list-info .rating { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .product-list-info .list-tags { margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .product-list-info .list-tag { font-size: 11px; background: var(--linen); color: var(--muted); border-radius: 4px; padding: 2px 7px; }
+
+  /* ── BUYER DASHBOARD ─────────────────────────────────────────── */
+  .favorites-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+
+  /* ── VALIDATION ERROR ────────────────────────────────────────── */
+  .field-error { border-color: #DC2626 !important; }
+  .field-error-msg { font-size: 11px; color: #DC2626; margin-top: 4px; display: block; }
 </style>
 </head>
 <body>
@@ -1186,6 +1305,7 @@
     <button onclick="doSearch()">Search</button>
   </div>
   <div class="topbar-actions">
+    <button class="btn-ghost" onclick="showView('favorites')" title="Favorites" style="padding:7px 12px;">🤍</button>
     <button class="btn-ghost" onclick="showView('sell-dashboard')" id="sellerBtn">Seller Hub</button>
     <button class="cart-btn" onclick="openCart()">
       🛍 Cart <span class="cart-count" id="cartCountBadge">0</span>
@@ -1223,6 +1343,14 @@
         <button class="btn-hero-outline" onclick="showView('sell-dashboard')">Open Your Shop →</button>
       </div>
     </div>
+  </div>
+
+  <!-- Category Tiles -->
+  <div class="section" style="padding-top:0;">
+    <div class="section-header">
+      <div><h2>Shop by Category</h2><p>Find exactly what you're looking for</p></div>
+    </div>
+    <div class="cat-tiles" id="catTilesGrid"></div>
   </div>
 
   <!-- Featured Products -->
@@ -1345,17 +1473,24 @@
 
     <!-- Results -->
     <div>
+      <div class="active-filters" id="activeFiltersRow" style="display:none;"></div>
       <div class="results-header">
         <span class="results-count" id="resultsCount">Showing all items</span>
-        <select class="sort-select" onchange="sortResults(this.value)">
-          <option value="relevance">Most Relevant</option>
-          <option value="recent">Newest First</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
-          <option value="rating">Highest Rated</option>
-        </select>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <select class="sort-select" onchange="sortResults(this.value)">
+            <option value="relevance">Most Relevant</option>
+            <option value="recent">Newest First</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="rating">Highest Rated</option>
+          </select>
+          <div class="view-toggle">
+            <button class="view-toggle-btn active" id="gridViewBtn" onclick="setSearchView('grid',this)" title="Grid view">⊞</button>
+            <button class="view-toggle-btn" id="listViewBtn" onclick="setSearchView('list',this)" title="List view">☰</button>
+          </div>
+        </div>
       </div>
-      <div class="product-grid" id="searchGrid"></div>
+      <div id="searchGrid" class="product-grid"></div>
     </div>
 
   </div>
@@ -1869,6 +2004,107 @@
   </div>
 </div>
 
+<!-- ── RECENTLY VIEWED TRAY ────────────────────────────── -->
+<div class="recently-viewed-tray" id="rvTray">
+  <div class="rv-inner">
+    <div class="rv-label">Recently viewed</div>
+    <div class="rv-items" id="rvItems"></div>
+    <button class="rv-close" onclick="document.getElementById('rvTray').classList.remove('show')">✕</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     VIEW: FAVORITES
+═════════════════════════════════════════════════════════ -->
+<div class="view" id="view-favorites">
+  <div style="max-width:1100px;margin:0 auto;padding:36px 24px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <h1 style="font-size:26px;margin-bottom:4px;">Your Favorites</h1>
+        <p style="font-size:13px;color:var(--muted);" id="favCount">0 items saved</p>
+      </div>
+      <button class="btn-ghost" style="color:var(--bark);border-color:var(--border);" onclick="showView('search')">Keep browsing →</button>
+    </div>
+    <div class="product-grid" id="favoritesGrid"></div>
+    <div id="favEmpty" style="display:none;text-align:center;padding:60px 0;">
+      <div style="font-size:48px;margin-bottom:14px;">🤍</div>
+      <h3 style="font-size:20px;margin-bottom:8px;">No favorites yet</h3>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:20px;">Heart items you love to save them here.</p>
+      <button class="btn-primary" onclick="showView('search')" style="padding:12px 28px;">Explore the market</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     VIEW: BUYER DASHBOARD
+═════════════════════════════════════════════════════════ -->
+<div class="view" id="view-buyer-dashboard">
+  <div class="dash-layout">
+    <nav class="dash-nav">
+      <h3>My Account</h3>
+      <div class="dash-nav-item active" onclick="showBuyerPanel('orders',this)"><span>📦</span> Purchases</div>
+      <div class="dash-nav-item" onclick="showBuyerPanel('favorites',this)"><span>❤️</span> Favorites</div>
+      <div class="dash-nav-item" onclick="showBuyerPanel('reviews',this)"><span>⭐</span> Reviews to Leave</div>
+      <div class="dash-nav-item" onclick="showBuyerPanel('messages',this)"><span>💬</span> Messages</div>
+      <div class="dash-nav-item" onclick="showBuyerPanel('settings',this)"><span>⚙️</span> Account settings</div>
+    </nav>
+    <main class="dash-main">
+      <div class="dash-panel active" id="buyer-orders">
+        <h2 style="font-size:22px;margin-bottom:20px;">Purchases & Reviews</h2>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>Order</th><th>Item</th><th>Total</th><th>Status</th><th>Date</th><th></th></tr></thead>
+            <tbody id="buyerOrdersTable"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="dash-panel" id="buyer-favorites">
+        <h2 style="font-size:22px;margin-bottom:20px;">Saved Items</h2>
+        <div class="favorites-grid" id="buyerFavGrid"></div>
+        <p id="buyerFavEmpty" style="display:none;color:var(--muted);font-size:14px;">No favorites yet — heart items you love!</p>
+      </div>
+      <div class="dash-panel" id="buyer-reviews">
+        <h2 style="font-size:22px;margin-bottom:20px;">Leave a Review</h2>
+        <div style="background:#fff;border-radius:var(--r-lg);padding:24px;box-shadow:0 2px 8px var(--shadow);">
+          <p style="font-size:14px;color:var(--muted);margin-bottom:20px;">Share your experience to help other buyers and support sellers.</p>
+          <div style="display:flex;align-items:center;gap:16px;padding:16px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;">
+            <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=80&h=80&fit=crop" style="width:60px;height:60px;object-fit:cover;border-radius:8px;" loading="lazy">
+            <div style="flex:1;">
+              <div style="font-weight:600;font-size:14px;">Hand-thrown Terracotta Mug</div>
+              <div style="font-size:12px;color:var(--muted);">ClayAndThyme · Order #7821</div>
+            </div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <label style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);display:block;margin-bottom:8px;">Your rating</label>
+            <div style="display:flex;gap:6px;" id="starPicker">
+              ${[1,2,3,4,5].map(n=>`<span onclick="pickStar(${n})" data-star="${n}" style="font-size:28px;cursor:pointer;filter:grayscale(1);transition:filter .15s;">⭐</span>`).join('')}
+            </div>
+          </div>
+          <div style="margin-bottom:14px;"><label style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);display:block;margin-bottom:6px;">Your review</label><textarea class="textarea-input" id="reviewText" placeholder="Tell others what you think — quality, packaging, how it looks in person…"></textarea></div>
+          <button class="btn-primary" onclick="submitReview()" style="padding:11px 28px;">Submit review</button>
+        </div>
+      </div>
+      <div class="dash-panel" id="buyer-messages">
+        <h2 style="font-size:22px;margin-bottom:20px;">Messages</h2>
+        <div style="background:#fff;border-radius:var(--r-lg);padding:48px;text-align:center;box-shadow:0 2px 8px var(--shadow);">
+          <div style="font-size:40px;margin-bottom:12px;">💬</div>
+          <p style="color:var(--muted);font-size:14px;">No messages yet. Message a seller from any listing page.</p>
+        </div>
+      </div>
+      <div class="dash-panel" id="buyer-settings">
+        <h2 style="font-size:22px;margin-bottom:20px;">Account settings</h2>
+        <div style="background:#fff;border-radius:var(--r-lg);padding:28px;box-shadow:0 2px 8px var(--shadow);max-width:520px;">
+          <div class="form-row"><label>Full name</label><input class="form-input" type="text" placeholder="Jane Doe" value="Jane Doe"></div>
+          <div class="form-row"><label>Email</label><input class="form-input" type="email" value="jane@example.com"></div>
+          <div class="form-row"><label>Username</label><input class="form-input" type="text" placeholder="@janecreates"></div>
+          <div class="form-row"><label>Password</label><input class="form-input" type="password" placeholder="••••••••"></div>
+          <button class="btn-primary" onclick="showToast('Settings saved ✓')" style="padding:11px 24px;margin-top:4px;">Save changes</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
 <!-- ── TOAST ──────────────────────────────────────────── -->
 <div class="toast" id="toast"></div>
 
@@ -2063,9 +2299,46 @@ function sortResults(val) {
 }
 
 // ── PRODUCT DETAIL ─────────────────────────────────────
+const REVIEWS_DATA = {
+  1: [
+    { name:'Sophie M.', avatar:'S', rating:5, date:'May 28, 2026', text:'Absolutely beautiful mug. The sage glaze is even lovelier in person — rich and earthy. Packed incredibly well, arrived without a scratch. Will be ordering more!', verified:true, helpful:12 },
+    { name:'Alex T.', avatar:'A', rating:5, date:'May 12, 2026', text:'Third mug I\'ve bought from this shop. Quality is consistently excellent. Gift-worthy every time.', verified:true, helpful:7 },
+    { name:'Robin K.', avatar:'R', rating:4, date:'Apr 30, 2026', text:'Love the shape and weight. The glaze had a tiny bubble on the bottom but nothing that affects use. Seller was super responsive.', verified:true, helpful:3 },
+  ],
+  2: [
+    { name:'Jordan P.', avatar:'J', rating:5, date:'Jun 1, 2026', text:'This ring is a true work of art. The flowers are perfectly preserved inside the resin. Fits exactly as described.', verified:true, helpful:9 },
+  ],
+  3: [
+    { name:'Morgan L.', avatar:'M', rating:5, date:'May 20, 2026', text:'The linen is so high quality and the block printing is crisp. Holds so much! Great for farmers markets.', verified:true, helpful:14 },
+    { name:'Casey W.', avatar:'C', rating:4, date:'May 5, 2026', text:'Beautiful tote. The indigo color is a bit darker than in photos but still stunning. Ships fast.', verified:true, helpful:4 },
+  ],
+};
+
+const CAT_TILES = [
+  { label:'Jewelry', cat:'jewelry', img:'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop' },
+  { label:'Ceramics', cat:'ceramics', img:'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=400&fit=crop' },
+  { label:'Textiles', cat:'textiles', img:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&h=400&fit=crop' },
+  { label:'Art & Prints', cat:'art', img:'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400&h=400&fit=crop' },
+  { label:'Woodwork', cat:'woodwork', img:'https://images.unsplash.com/photo-1611486212355-d276af4581c0?w=400&h=400&fit=crop' },
+  { label:'Vintage', cat:'vintage', img:'https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?w=400&h=400&fit=crop' },
+  { label:'Candles', cat:'candles', img:'https://images.unsplash.com/photo-1608181831718-c9fda686d4f8?w=400&h=400&fit=crop' },
+  { label:'Plants', cat:'plants', img:'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=400&fit=crop' },
+];
+
+let recentlyViewed = [];
+let searchViewMode = 'grid';
+let activeFilters = {}; // { category, priceMin, priceMax, type, shipping, rating }
+let followedShops = new Set();
+let starRating = 0;
+
 function openProduct(id) {
   const p = PRODUCTS.find(x => x.id === id);
   if (!p) return;
+
+  // Track recently viewed
+  recentlyViewed = [p, ...recentlyViewed.filter(r => r.id !== id)].slice(0, 8);
+  updateRecentlyViewed();
+
   const shop = SHOPS.find(s => s.id === p.shopId);
   const vars = Object.entries(p.variations || {}).map(([k,vals]) => `
     <div class="variation-group">
@@ -2074,7 +2347,68 @@ function openProduct(id) {
         ${vals.map((v,i) => `<button class="variation-pill ${i===0?'active':''}" onclick="selectVariation(this)">${v}</button>`).join('')}
       </div>
     </div>`).join('');
-  
+
+  const urgencyHTML = p.stock <= 3
+    ? `<div class="urgency-badge">🔥 Only ${p.stock} left — order soon!</div>`
+    : '';
+  const inCartCount = Math.floor(Math.random() * 6) + 2;
+  const inCartHTML = `<div class="in-cart-nudge">👀 ${inCartCount} people have this in their cart</div>`;
+
+  // Delivery estimate: 5-8 business days from today
+  const delivDate = new Date(); delivDate.setDate(delivDate.getDate() + 7);
+  const delivStr = delivDate.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+  const delivHTML = `<div class="delivery-est">📦 <span>Order today — estimated delivery by <strong>${delivStr}</strong></span></div>`;
+
+  const starSeller = shop && shop.rating >= 4.8
+    ? `<div class="star-seller-badge">⭐ Star Seller</div>` : '';
+
+  const catLabel = p.category.charAt(0).toUpperCase() + p.category.slice(1);
+  const breadcrumb = `<div class="breadcrumb">
+    <span onclick="showView('home')">Home</span><span class="bc-sep">›</span>
+    <span onclick="filterCat('${p.category}',{classList:{add:()=>{},remove:()=>{}}});showView('search')">${catLabel}</span><span class="bc-sep">›</span>
+    <span>${p.name}</span>
+  </div>`;
+
+  // Reviews
+  const revs = REVIEWS_DATA[p.id] || [];
+  const avgRev = revs.length ? (revs.reduce((s,r)=>s+r.rating,0)/revs.length).toFixed(1) : p.rating;
+  const reviewsHTML = revs.length ? revs.map(r => `
+    <div class="review-card">
+      <div class="review-header">
+        <div class="review-avatar">${r.avatar}</div>
+        <div class="review-meta">
+          <div class="rev-name">${r.name}</div>
+          <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+          <div class="rev-date">${r.date}</div>
+        </div>
+      </div>
+      ${r.verified ? '<div class="review-verified">✓ Verified purchase</div>' : ''}
+      <div class="review-body">${r.text}</div>
+      <div class="review-helpful">Helpful? <button onclick="showToast('Thanks for your feedback!')">Yes (${r.helpful})</button></div>
+    </div>`).join('') : '<p style="color:var(--muted);font-size:13px;">No reviews yet — be the first!</p>';
+
+  // More from shop
+  const moreFromShop = PRODUCTS.filter(x => x.shopId === p.shopId && x.id !== p.id).slice(0,6);
+  const moreHTML = moreFromShop.map(x => `
+    <div class="mini-product-card" onclick="openProduct(${x.id})">
+      <img src="${x.img}" alt="${x.name}" loading="lazy">
+      <div class="mini-product-card-body">
+        <div class="mini-product-card-name">${x.name}</div>
+        <div class="mini-product-card-price">$${x.price}.00</div>
+      </div>
+    </div>`).join('');
+
+  // You may also like
+  const alsoLike = PRODUCTS.filter(x => x.category === p.category && x.id !== p.id).slice(0,6);
+  const alsoHTML = alsoLike.map(x => `
+    <div class="mini-product-card" onclick="openProduct(${x.id})">
+      <img src="${x.img}" alt="${x.name}" loading="lazy">
+      <div class="mini-product-card-body">
+        <div class="mini-product-card-name">${x.name}</div>
+        <div class="mini-product-card-price">$${x.price}.00</div>
+      </div>
+    </div>`).join('');
+
   document.getElementById('productDetailContent').innerHTML = `
     <div class="detail-imgs">
       <div class="detail-main-img" style="font-size:0;background:var(--parchment);"><img id="detailMainImg" src="${p.imgs[0]}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--r-lg);" loading="eager"></div>
@@ -2083,15 +2417,18 @@ function openProduct(id) {
       </div>
     </div>
     <div class="detail-info">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">${p.category}</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">${catLabel}</div>
       <h1>${p.name}</h1>
       <span class="detail-shop-link" onclick="openShop(${p.shopId})">by ${p.shop} →</span>
       <div class="detail-rating">
         <span class="stars">${'⭐'.repeat(Math.floor(p.rating))}</span>
-        <span>${p.rating} · ${p.reviews} reviews</span>
+        <span>${avgRev} · ${p.reviews + revs.length} reviews</span>
         <span>·</span>
         <span>${p.stock} available</span>
       </div>
+      ${starSeller}
+      ${urgencyHTML}
+      ${inCartHTML}
       <div class="detail-price">$${p.price}.00</div>
       ${vars}
       <div class="qty-row">
@@ -2102,22 +2439,47 @@ function openProduct(id) {
         </div>
         <span class="qty-label">(${p.stock} in stock)</span>
       </div>
+      ${delivHTML}
       <button class="btn-add-cart" onclick="addToCart(${p.id})">Add to Cart</button>
       <button class="btn-fav-large" onclick="toggleFavDirect(${p.id}, this)">${favorites.has(p.id)?'❤️ Saved to Favorites':'🤍 Save to Favorites'}</button>
       <hr class="detail-divider">
       <div class="detail-desc">
         <h3>About this item</h3>
         <p>${p.desc}</p>
+        ${p.tags.length ? `<div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px;">${p.tags.map(t=>`<span style="font-size:11px;background:var(--linen);color:var(--muted);border-radius:4px;padding:3px 8px;">${t}</span>`).join('')}</div>` : ''}
       </div>
       <div class="seller-box" onclick="openShop(${p.shopId})">
         <div class="shop-avatar" style="width:44px;height:44px;overflow:hidden;padding:0;"><img src="${shop?.avatar||''}" alt="${p.shop}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" loading="lazy"></div>
         <div class="seller-box-info">
           <h4>${p.shop}</h4>
           <p>⭐ ${shop?.rating} · ${shop?.reviews} reviews</p>
+          <p style="font-size:11px;color:var(--muted);margin-top:1px;">Ships from ${['Portland, OR','Denver, CO','Asheville, NC','Burlington, VT','Olympia, WA','Chicago, IL','Austin, TX','Brooklyn, NY'][p.shopId-1]}</p>
         </div>
         <button class="btn-msg" onclick="event.stopPropagation();showToast('Message sent to ${p.shop}! ✉️')">Message</button>
       </div>
+      <button class="btn-follow ${followedShops.has(p.shopId)?'following':''}" id="followBtn-${p.shopId}" onclick="toggleFollow(${p.shopId})" style="width:100%;justify-content:center;margin-top:10px;">
+        ${followedShops.has(p.shopId)?'✓ Following':'+ Follow this shop'}
+      </button>
+      <p style="font-size:11px;color:var(--muted);text-align:right;margin-top:10px;cursor:pointer;" onclick="showToast('Report submitted — thank you.')">🚩 Report this listing</p>
+      <hr class="detail-divider">
+      <div>
+        <h3 style="font-size:18px;margin-bottom:16px;">Reviews (${p.reviews + revs.length})</h3>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);">
+          <div style="font-size:40px;font-weight:700;font-family:'Playfair Display',serif;color:var(--walnut);">${avgRev}</div>
+          <div>
+            <div style="font-size:20px;color:#E8A030;">${'★'.repeat(Math.round(avgRev))}${'☆'.repeat(5-Math.round(avgRev))}</div>
+            <div style="font-size:12px;color:var(--muted);">${p.reviews + revs.length} reviews</div>
+          </div>
+        </div>
+        ${reviewsHTML}
+      </div>
+      ${moreFromShop.length ? `<hr class="detail-divider"><h3 style="font-size:18px;margin-bottom:14px;">More from ${p.shop}</h3><div class="mini-product-scroll">${moreHTML}</div>` : ''}
+      ${alsoLike.length ? `<hr class="detail-divider"><h3 style="font-size:18px;margin-bottom:14px;">You might also like</h3><div class="mini-product-scroll">${alsoHTML}</div>` : ''}
     </div>`;
+
+  // Prepend breadcrumb
+  const wrapper = document.querySelector('#view-product > div:first-child');
+  if (wrapper) wrapper.innerHTML = breadcrumb;
 
   showView('product');
 }
@@ -2444,15 +2806,8 @@ function toggleFav(e, id) {
   e.stopPropagation();
   if (favorites.has(id)) { favorites.delete(id); showToast('Removed from favorites'); }
   else { favorites.add(id); showToast('Saved to favorites ❤️'); }
-  // re-render wherever we are
-  const allCards = document.querySelectorAll('.product-card');
-  allCards.forEach(card => {
-    const btn = card.querySelector('.fav-btn');
-    if (!btn) return;
-    const cardId = parseInt(card.getAttribute('data-id'));
-  });
-  // Quick re-render approach
   renderHome();
+  if (document.getElementById('view-favorites')?.classList.contains('active')) renderFavoritesView();
 }
 
 function toggleFavDirect(id, btn) {
@@ -2619,10 +2974,11 @@ function doAuth() {
   if (!email) { showToast('Please enter your email'); return; }
   const isRegister = document.getElementById('authSubmitBtn').textContent === 'Create Account';
   currentUser = { email, role: document.getElementById('authRole')?.value || 'BUYER' };
-  document.getElementById('authBtn').textContent = email.split('@')[0];
-  document.getElementById('authBtn').onclick = () => showToast(`Signed in as ${email}`);
+  const name = email.split('@')[0];
+  document.getElementById('authBtn').textContent = name;
+  document.getElementById('authBtn').onclick = () => showView('buyer-dashboard');
   closeAuth();
-  showToast(isRegister ? `Welcome to Sketchy! 🎉` : `Welcome back! 👋`);
+  showToast(isRegister ? `Welcome to Sketchy! 🎉` : `Welcome back, ${name}! 👋`);
 }
 function socialLogin(provider) {
   currentUser = { email: `user@${provider.toLowerCase()}.com`, role:'BUYER' };
@@ -2641,8 +2997,367 @@ function showToast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
 }
 
+// ── RECENTLY VIEWED ────────────────────────────────────
+function updateRecentlyViewed() {
+  const tray = document.getElementById('rvTray');
+  const el = document.getElementById('rvItems');
+  if (!recentlyViewed.length) { tray.classList.remove('show'); return; }
+  tray.classList.add('show');
+  el.innerHTML = recentlyViewed.map(p => `
+    <div class="rv-item" onclick="openProduct(${p.id})" title="${p.name}">
+      <img src="${p.img}" alt="${p.name}" loading="lazy">
+    </div>`).join('');
+}
+
+// ── FOLLOW SHOP ────────────────────────────────────────
+function toggleFollow(shopId) {
+  if (followedShops.has(shopId)) {
+    followedShops.delete(shopId);
+    showToast('Unfollowed shop');
+  } else {
+    followedShops.add(shopId);
+    showToast('Following this shop! You\'ll get updates on new items 🎉');
+  }
+  const btn = document.getElementById('followBtn-' + shopId);
+  if (btn) {
+    btn.classList.toggle('following', followedShops.has(shopId));
+    btn.textContent = followedShops.has(shopId) ? '✓ Following' : '+ Follow this shop';
+  }
+}
+
+// ── SAVE FOR LATER ─────────────────────────────────────
+let savedForLater = [];
+
+function saveForLater(id) {
+  const item = cart.find(i => i.id === id);
+  if (!item) return;
+  savedForLater = savedForLater.filter(s => s.id !== id);
+  savedForLater.push({...item});
+  removeFromCart(id);
+  showToast(`${item.name} saved for later`);
+  renderCartPanel();
+}
+
+function moveToCart(id) {
+  const item = savedForLater.find(s => s.id === id);
+  if (!item) return;
+  savedForLater = savedForLater.filter(s => s.id !== id);
+  const existing = cart.find(i => i.id === id);
+  if (existing) existing.qty += 1;
+  else cart.push({...item, qty:1});
+  updateCartBadge();
+  renderCartPanel();
+  showToast(`${item.name} moved to cart`);
+}
+
+function renderSavedLater() {
+  const existing = document.getElementById('savedLaterSection');
+  if (existing) existing.remove();
+  if (!savedForLater.length) return;
+  const panel = document.getElementById('cartPanel');
+  const section = document.createElement('div');
+  section.id = 'savedLaterSection';
+  section.className = 'saved-later-section';
+  section.innerHTML = `<h4>Saved for later (${savedForLater.length})</h4>` +
+    savedForLater.map(s => `
+      <div class="saved-item">
+        <img src="${s.img}" alt="${s.name}" loading="lazy">
+        <div style="flex:1;">
+          <div style="font-weight:500;">${s.name}</div>
+          <div style="color:var(--sienna);font-weight:600;">$${s.price}.00</div>
+          <div class="saved-item-actions">
+            <button class="saved-item-btn" onclick="moveToCart(${s.id})">Move to cart</button>
+            <span style="color:var(--border);">·</span>
+            <button class="saved-item-btn" style="color:var(--muted);" onclick="savedForLater=savedForLater.filter(x=>x.id!==${s.id});renderCartPanel();">Remove</button>
+          </div>
+        </div>
+      </div>`).join('');
+  panel.appendChild(section);
+}
+
+// Patch renderCartPanel to also show save-for-later and call renderSavedLater
+const _origRenderCartPanel = renderCartPanel;
+renderCartPanel = function() {
+  _origRenderCartPanel();
+  // Inject save-for-later buttons into existing cart items
+  document.querySelectorAll('.cart-item').forEach(el => {
+    if (el.querySelector('.save-later-btn')) return;
+    const removeBtn = el.querySelector('.cart-item-remove');
+    if (removeBtn) {
+      const id = parseInt(removeBtn.getAttribute('onclick').match(/\d+/)?.[0]);
+      if (!isNaN(id)) {
+        const sl = document.createElement('button');
+        sl.className = 'cart-item-remove save-later-btn';
+        sl.style.marginLeft = '10px';
+        sl.textContent = 'Save for later';
+        sl.onclick = () => saveForLater(id);
+        removeBtn.parentNode.insertBefore(sl, removeBtn.nextSibling);
+      }
+    }
+  });
+  renderSavedLater();
+};
+
+// ── FILTER CHIPS ───────────────────────────────────────
+function addFilterChip(key, label) {
+  activeFilters[key] = label;
+  renderFilterChips();
+}
+
+function removeFilterChip(key) {
+  delete activeFilters[key];
+  renderFilterChips();
+  renderSearch(PRODUCTS);
+}
+
+function renderFilterChips() {
+  const row = document.getElementById('activeFiltersRow');
+  if (!row) return;
+  const keys = Object.keys(activeFilters);
+  if (!keys.length) { row.style.display = 'none'; return; }
+  row.style.display = 'flex';
+  row.innerHTML = keys.map(k => `
+    <span class="filter-chip" onclick="removeFilterChip('${k}')">
+      ${activeFilters[k]} <span class="chip-x">×</span>
+    </span>`).join('') +
+    `<span class="clear-all-chip" onclick="clearAllFilters()">Clear all</span>`;
+}
+
+function clearAllFilters() {
+  activeFilters = {};
+  renderFilterChips();
+  renderSearch(PRODUCTS);
+  // uncheck all filter checkboxes
+  document.querySelectorAll('.filter-check input').forEach(cb => cb.checked = false);
+}
+
+// Patch applyFilters to add chips
+const _origApplyFilters = applyFilters;
+applyFilters = function() {
+  const min = parseFloat(document.getElementById('priceMin').value) || 0;
+  const max = parseFloat(document.getElementById('priceMax').value) || Infinity;
+  if (min > 0 || max < Infinity) {
+    const label = max < Infinity ? `$${min}–$${max}` : `$${min}+`;
+    addFilterChip('price', label);
+  }
+  _origApplyFilters();
+};
+
+// ── SEARCH VIEW MODE ────────────────────────────────────
+function setSearchView(mode, btn) {
+  searchViewMode = mode;
+  document.querySelectorAll('.view-toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderSearch(PRODUCTS);
+}
+
+// Override renderProductGrid to respect view mode in search
+const _origRenderProductGrid = renderProductGrid;
+renderProductGrid = function(containerId, products) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (containerId === 'searchGrid' && searchViewMode === 'list') {
+    el.className = 'product-list';
+    if (!products.length) {
+      el.innerHTML = '<div style="padding:48px;text-align:center;color:var(--muted);">No items found.</div>';
+      return;
+    }
+    el.innerHTML = products.map(p => `
+      <div class="product-list-card" onclick="openProduct(${p.id})">
+        <img src="${p.img}" alt="${p.name}" loading="lazy">
+        <div class="product-list-info">
+          <div class="shop-name">${p.shop}</div>
+          <h4>${p.name}</h4>
+          <div class="price">$${p.price}.00</div>
+          <div class="rating"><span style="color:#E8A030;">${'★'.repeat(Math.floor(p.rating))}</span> ${p.rating} (${p.reviews})</div>
+          <div class="list-tags">${p.tags.slice(0,3).map(t=>`<span class="list-tag">${t}</span>`).join('')}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;">
+          <button class="btn-primary" style="font-size:12px;padding:8px 14px;" onclick="event.stopPropagation();addToCart(${p.id})">Add to cart</button>
+          <button class="btn-fav-large" style="font-size:12px;padding:7px 14px;" onclick="event.stopPropagation();toggleFav(event,${p.id})">🤍 Save</button>
+        </div>
+      </div>`).join('');
+  } else {
+    el.className = 'product-grid';
+    _origRenderProductGrid(containerId, products);
+  }
+};
+
+// ── CATEGORY TILES ─────────────────────────────────────
+function renderCatTiles() {
+  const el = document.getElementById('catTilesGrid');
+  if (!el) return;
+  el.innerHTML = CAT_TILES.map(c => `
+    <div class="cat-tile" onclick="filterCat('${c.cat}',{classList:{add:()=>{},remove:()=>{}}});showView('search')">
+      <img src="${c.img}" alt="${c.label}" loading="lazy">
+      <div class="cat-tile-label">${c.label}</div>
+    </div>`).join('');
+}
+
+// ── BUYER DASHBOARD ────────────────────────────────────
+function showBuyerPanel(name, el) {
+  document.querySelectorAll('#view-buyer-dashboard .dash-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('buyer-' + name)?.classList.add('active');
+  document.querySelectorAll('#view-buyer-dashboard .dash-nav-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+  if (name === 'orders') renderBuyerOrders();
+  if (name === 'favorites') renderBuyerFavorites();
+}
+
+function renderBuyerOrders() {
+  const tbody = document.getElementById('buyerOrdersTable');
+  if (!tbody) return;
+  const mockOrders = [
+    { id:'#8042', item:'Hand-thrown Terracotta Mug', shop:'ClayAndThyme', total:'$38.00', status:'PENDING', date:'Jun 8' },
+    { id:'#7965', item:'Pressed Wildflower Resin Ring', shop:'PetalForge', total:'$62.00', status:'COMPLETED', date:'May 20' },
+    { id:'#7901', item:'Macramé Plant Hanger Trio', shop:'KnotAndWild', total:'$58.00', status:'COMPLETED', date:'May 10' },
+  ];
+  tbody.innerHTML = mockOrders.map(o => `
+    <tr>
+      <td style="font-weight:600;color:var(--sienna);">${o.id}</td>
+      <td>${o.item}<div style="font-size:11px;color:var(--muted);">${o.shop}</div></td>
+      <td style="font-weight:600;">${o.total}</td>
+      <td><span class="status-pill ${o.status.toLowerCase()}">${o.status}</span></td>
+      <td style="color:var(--muted);">${o.date}</td>
+      <td><button onclick="showToast('Tracking info coming soon 📦')" style="background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;color:var(--bark);">Track</button></td>
+    </tr>`).join('');
+}
+
+function renderBuyerFavorites() {
+  const el = document.getElementById('buyerFavGrid');
+  const empty = document.getElementById('buyerFavEmpty');
+  if (!el) return;
+  const favProducts = PRODUCTS.filter(p => favorites.has(p.id));
+  if (!favProducts.length) {
+    el.innerHTML = '';
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  el.innerHTML = favProducts.map(p => productCardHTML(p)).join('');
+}
+
+// ── FAVORITES VIEW ─────────────────────────────────────
+function renderFavoritesView() {
+  const el = document.getElementById('favoritesGrid');
+  const empty = document.getElementById('favEmpty');
+  const count = document.getElementById('favCount');
+  if (!el) return;
+  const favProducts = PRODUCTS.filter(p => favorites.has(p.id));
+  if (count) count.textContent = `${favProducts.length} item${favProducts.length!==1?'s':''} saved`;
+  if (!favProducts.length) {
+    el.innerHTML = '';
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  el.innerHTML = favProducts.map(p => productCardHTML(p)).join('');
+}
+
+// ── STAR PICKER (review form) ──────────────────────────
+function pickStar(n) {
+  starRating = n;
+  document.querySelectorAll('#starPicker span').forEach((s,i) => {
+    s.style.filter = i < n ? 'none' : 'grayscale(1)';
+  });
+}
+
+function submitReview() {
+  if (!starRating) { showToast('Please pick a star rating first'); return; }
+  const text = document.getElementById('reviewText')?.value.trim();
+  if (!text) { showToast('Please write a short review'); return; }
+  showToast('Review submitted — thank you! ⭐');
+  starRating = 0;
+  document.querySelectorAll('#starPicker span').forEach(s => s.style.filter = 'grayscale(1)');
+  if (document.getElementById('reviewText')) document.getElementById('reviewText').value = '';
+}
+
+// ── CHECKOUT VALIDATION ────────────────────────────────
+function validateShipping() {
+  let valid = true;
+  ['coName','coEmail','coAddr','coCity','coZip'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const msg = el.parentNode.querySelector('.field-error-msg');
+    if (!el.value.trim()) {
+      el.classList.add('field-error');
+      if (!msg) {
+        const span = document.createElement('span');
+        span.className = 'field-error-msg';
+        span.textContent = 'This field is required';
+        el.parentNode.appendChild(span);
+      }
+      valid = false;
+    } else {
+      el.classList.remove('field-error');
+      if (msg) msg.remove();
+    }
+  });
+  return valid;
+}
+
+function validatePayment() {
+  let valid = true;
+  ['coCard','coExp','coCVC','coCardName'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || el.closest('#payCardForm')?.style.display === 'none') return;
+    const msg = el.parentNode.querySelector('.field-error-msg');
+    if (!el.value.trim()) {
+      el.classList.add('field-error');
+      if (!msg) {
+        const span = document.createElement('span');
+        span.className = 'field-error-msg';
+        span.textContent = 'Required';
+        el.parentNode.appendChild(span);
+      }
+      valid = false;
+    } else {
+      el.classList.remove('field-error');
+      if (msg) msg.remove();
+    }
+  });
+  return valid;
+}
+
+// ── SHOP STOREFRONT: add follow button ─────────────────
+const _origOpenShop = openShop;
+openShop = function(shopId) {
+  _origOpenShop(shopId);
+  // inject follow button into shop banner
+  const meta = document.getElementById('shopBannerMeta');
+  if (meta && !meta.querySelector('.btn-follow')) {
+    const fb = document.createElement('button');
+    fb.className = `btn-follow ${followedShops.has(shopId)?'following':''}`;
+    fb.style.cssText = 'position:relative;z-index:1;margin-left:auto;';
+    fb.textContent = followedShops.has(shopId) ? '✓ Following' : '+ Follow';
+    fb.onclick = (e) => { e.stopPropagation(); toggleFollow(shopId); fb.classList.toggle('following',followedShops.has(shopId)); fb.textContent = followedShops.has(shopId)?'✓ Following':'+ Follow'; };
+    meta.appendChild(fb);
+  }
+};
+
+// ── PATCH goCheckoutStep for validation ────────────────
+const _origGoCheckoutStep = goCheckoutStep;
+goCheckoutStep = function(step) {
+  if (step === 3 && checkoutStep === 2) {
+    if (!validateShipping()) { showToast('Please fill in all required fields'); return; }
+  }
+  if (step === 4 && checkoutStep === 3) {
+    if (!validatePayment()) { showToast('Please fill in payment details'); return; }
+  }
+  _origGoCheckoutStep(step);
+};
+
+// ── PATCH showView for favorites ───────────────────────
+const _origShowView = showView;
+showView = function(name) {
+  _origShowView(name);
+  if (name === 'favorites') renderFavoritesView();
+  if (name === 'buyer-dashboard') renderBuyerOrders();
+};
+
 // ── INIT ───────────────────────────────────────────────
 renderHome();
+renderCatTiles();
 renderSearch(PRODUCTS);
 renderDashOrders();
 renderListingsTable();
