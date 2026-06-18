@@ -747,7 +747,15 @@
     display: flex;
     align-items: flex-end;
     padding: 24px;
+    transition: height .2s;
   }
+  .shop-banner--wide { height: 280px; align-items: center; justify-content: center; }
+  .shop-banner--wide .shop-banner-meta { flex-direction: column; text-align: center; }
+  .shop-banner--wide .shop-banner-avatar { width: 110px; height: 110px; }
+  .shop-banner--wide .shop-banner-info h1 { font-size: 32px; }
+  .shop-banner--minimal { height: 110px; padding: 16px 24px; }
+  .shop-banner--minimal .shop-banner-avatar { width: 48px; height: 48px; }
+  .shop-banner--minimal .shop-banner-info h1 { font-size: 19px; margin-bottom: 0; }
   .shop-banner-meta {
     display: flex;
     align-items: flex-end;
@@ -782,6 +790,17 @@
   .shop-about p { font-size: 13px; color: var(--bark); line-height: 1.7; }
   .shop-policies h3 { font-size: 15px; margin-bottom: 10px; }
   .policy-item { font-size: 12px; color: var(--muted); margin-bottom: 6px; display: flex; gap: 8px; align-items: flex-start; }
+
+  /* ── STOREFRONT CUSTOM SECTIONS ──────────────────────────────── */
+  .shop-announce-bar { font-size: 13px; font-weight: 600; padding: 10px 16px; border-radius: var(--r); margin-bottom: 18px; text-align: center; }
+  .shop-faq-item { margin-bottom: 12px; }
+  .shop-faq-item .q { font-size: 13px; font-weight: 600; color: var(--bark); margin-bottom: 3px; }
+  .shop-faq-item .a { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .shop-links-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .shop-link-chip { font-size: 12px; font-weight: 600; padding: 6px 13px; border-radius: 20px; text-decoration: none; display: inline-block; }
+  .shop-hours-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--bark); padding: 5px 0; border-bottom: 1px solid var(--border); }
+  .shop-hours-row:last-child { border-bottom: none; }
+  .shop-hours-row span:first-child { font-weight: 600; }
 
   /* ── SELLER DASHBOARD ────────────────────────────────────────── */
   .dash-layout {
@@ -821,6 +840,86 @@
   .dash-main { }
   .dash-panel { display: none; }
   .dash-panel.active { display: block; }
+
+  /* ── SHOP PROFILE EDITOR ─────────────────────────────────────── */
+  .editor-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+  .editor-head h2 { font-size: 22px; margin-bottom: 4px; }
+  .editor-head .sub { font-size: 13px; color: var(--muted); }
+  .sp-editor-grid { display: grid; grid-template-columns: 1fr 380px; gap: 22px; align-items: start; }
+  @media (max-width: 980px) { .sp-editor-grid { grid-template-columns: 1fr; } }
+
+  .sp-block { background: #fff; border-radius: var(--r-lg); padding: 22px 24px; box-shadow: 0 2px 8px var(--shadow); margin-bottom: 18px; }
+  .sp-block h3 { font-size: 15px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .sp-block .sp-block-sub { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+
+  /* Theme swatches */
+  .sp-theme-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .sp-swatch { width: 56px; height: 56px; border-radius: 14px; cursor: pointer; border: 3px solid transparent; position: relative; transition: transform .15s; flex-shrink:0; }
+  .sp-swatch:hover { transform: translateY(-2px); }
+  .sp-swatch.active { border-color: var(--walnut); }
+  .sp-swatch.active::after { content:'✓'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px; text-shadow:0 1px 3px rgba(0,0,0,.4); }
+  .sp-swatch-label { font-size: 11px; color: var(--muted); text-align: center; margin-top: 6px; }
+  .sp-theme-item { display:flex; flex-direction:column; align-items:center; }
+
+  /* Layout style picker */
+  .sp-layout-row { display: flex; gap: 12px; }
+  .sp-layout-card { flex:1; border: 2px solid var(--border); border-radius: 10px; padding: 10px; cursor: pointer; text-align:center; transition: all .15s; }
+  .sp-layout-card:hover { border-color: var(--sage); }
+  .sp-layout-card.active { border-color: var(--sienna); background: var(--cream); }
+  .sp-layout-card .lc-preview { height: 38px; border-radius: 6px; margin-bottom: 8px; background: var(--parchment); position: relative; overflow:hidden; }
+  .sp-layout-card span { font-size: 12px; font-weight: 600; }
+
+  /* Section manager */
+  .sp-section-list { display: flex; flex-direction: column; gap: 8px; }
+  .sp-section-item { display: flex; align-items: center; gap: 10px; background: var(--linen); border: 1px solid var(--border); border-radius: 9px; padding: 10px 12px; }
+  .sp-section-item.disabled { opacity: .5; }
+  .sp-drag-handle { cursor: grab; color: var(--muted); font-size: 14px; user-select:none; }
+  .sp-section-item .sec-icon { font-size: 15px; }
+  .sp-section-item .sec-name { flex: 1; font-size: 13px; font-weight: 600; }
+  .sp-section-item .sec-move { display:flex; gap:2px; }
+  .sp-mini-btn { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--border); background: #fff; cursor: pointer; font-size: 12px; display:flex; align-items:center; justify-content:center; transition: background .15s; }
+  .sp-mini-btn:hover { background: var(--cream); }
+  .sp-mini-btn:disabled { opacity: .3; cursor: not-allowed; }
+  .sp-toggle { width: 38px; height: 22px; border-radius: 12px; background: var(--border); position: relative; cursor: pointer; flex-shrink:0; transition: background .15s; }
+  .sp-toggle.on { background: var(--sage); }
+  .sp-toggle::after { content:''; position:absolute; width:18px; height:18px; border-radius:50%; background:#fff; top:2px; left:2px; transition: left .15s; box-shadow:0 1px 3px rgba(0,0,0,.2); }
+  .sp-toggle.on::after { left: 18px; }
+
+  /* Dynamic section content editors (FAQ, links, hours) */
+  .sp-faq-row, .sp-link-row, .sp-hours-row { display:grid; gap:8px; margin-bottom:8px; align-items:start; }
+  .sp-faq-row { grid-template-columns: 1fr 1fr auto; }
+  .sp-link-row { grid-template-columns: 1fr 1fr auto; }
+  .sp-hours-row { grid-template-columns: 90px 1fr; }
+  .sp-add-row-btn { font-size: 12px; color: var(--sage); font-weight: 600; cursor: pointer; display:inline-flex; align-items:center; gap:4px; margin-top:4px; }
+  .sp-remove-btn { width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--border); background: #fff; color: var(--muted); cursor: pointer; }
+  .sp-remove-btn:hover { color: var(--sienna); border-color: var(--sienna); }
+
+  /* Live preview frame */
+  .sp-preview-col { position: sticky; top: 80px; }
+  .sp-preview-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 8px; display:flex; align-items:center; gap:8px; }
+  .sp-preview-tag { background: var(--cream); color: var(--sage); padding: 2px 8px; border-radius: 20px; font-size: 10px; text-transform: none; letter-spacing: 0; font-weight: 600; }
+  .sp-preview-frame { background: #fff; border-radius: var(--r-lg); box-shadow: 0 4px 16px var(--shadow-md); overflow: hidden; border: 1px solid var(--border); }
+  .sp-pv-banner { height: 90px; position: relative; background-size: cover; background-position: center; display:flex; align-items:flex-end; padding: 10px 12px; transition: height .2s; }
+  .sp-pv-banner::before { content:''; position:absolute; inset:0; background: rgba(0,0,0,.35); }
+  .sp-pv-banner--wide { height: 130px; align-items: center; justify-content: center; }
+  .sp-pv-banner--wide .sp-pv-meta { flex-direction: column; text-align: center; }
+  .sp-pv-banner--wide .sp-pv-avatar { width: 52px; height: 52px; }
+  .sp-pv-banner--wide h4 { font-size: 17px; }
+  .sp-pv-banner--minimal { height: 56px; padding: 8px 12px; }
+  .sp-pv-banner--minimal .sp-pv-avatar { width: 28px; height: 28px; }
+  .sp-pv-banner--minimal h4 { font-size: 12px; }
+  .sp-pv-meta { position:relative; z-index:1; display:flex; align-items:center; gap:8px; }
+  .sp-pv-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; background: var(--parchment); flex-shrink:0; }
+  .sp-pv-meta h4 { color: #fff; font-size: 14px; }
+  .sp-pv-meta p { color: rgba(255,255,255,.85); font-size: 10px; }
+  .sp-pv-body { padding: 14px; }
+  .sp-pv-announce { font-size: 11px; padding: 7px 10px; border-radius: 7px; margin-bottom: 10px; font-weight: 600; }
+  .sp-pv-section { margin-bottom: 14px; }
+  .sp-pv-section h5 { font-size: 11px; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); margin-bottom: 6px; }
+  .sp-pv-section p, .sp-pv-section div { font-size: 12px; color: var(--bark); line-height: 1.5; }
+  .sp-pv-faq-q { font-weight: 600; font-size: 12px; margin-top: 6px; }
+  .sp-pv-link { display:inline-block; font-size: 11px; padding: 4px 10px; border-radius: 20px; margin: 0 4px 4px 0; }
+  .sp-pv-empty { font-size: 11px; color: var(--muted); font-style: italic; text-align:center; padding: 20px 0; }
 
   .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 28px; }
   .stat-card {
@@ -1013,6 +1112,8 @@
   .img-upload-zone:hover { border-color: var(--sage); }
   .img-upload-zone .up-icon { font-size: 36px; margin-bottom: 8px; }
   .img-upload-zone p { font-size: 13px; }
+  .sp-banner-overlay { background: rgba(44,24,16,.55); border-radius: 7px; padding: 18px; color: #fff; }
+  .sp-banner-overlay p { color: #fff; }
   .textarea-input {
     width: 100%;
     border: 1.5px solid var(--border);
@@ -1266,8 +1367,8 @@
 
   /* ── FOLLOW SHOP BUTTON ──────────────────────────────────────── */
   .btn-follow { background: #fff; border: 1.5px solid var(--border); border-radius: 7px; padding: 8px 18px; font-size: 13px; font-weight: 600; color: var(--bark); cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 6px; }
-  .btn-follow:hover { border-color: var(--sienna); color: var(--sienna); }
-  .btn-follow.following { background: var(--sienna); color: #fff; border-color: var(--sienna); }
+  .btn-follow:hover { border-color: var(--shop-accent, var(--sienna)); color: var(--shop-accent, var(--sienna)); }
+  .btn-follow.following { background: var(--shop-accent, var(--sienna)); color: #fff; border-color: var(--shop-accent, var(--sienna)); }
 
   /* ── GRID / LIST TOGGLE ──────────────────────────────────────── */
   .view-toggle { display: flex; gap: 4px; }
@@ -1835,27 +1936,23 @@
 
       <!-- SHOP PROFILE EDITOR -->
       <div class="dash-panel" id="dash-shop-profile">
-        <div class="listing-form-box">
-          <h2>Shop Profile</h2>
-          <p class="sub">Your public storefront — this is what buyers see when they visit your shop.</p>
-
-          <div class="img-upload-zone" onclick="showToast('Banner upload ready in production 🏞')">
-            <div class="up-icon">🖼</div>
-            <p><strong>Upload a banner image</strong></p>
-            <p style="font-size:11px;margin-top:4px;">Recommended: 1200×300 px</p>
+        <div class="editor-head">
+          <div>
+            <h2>Shop Profile</h2>
+            <p class="sub">Customize your storefront — buyers see this the moment they land on your shop.</p>
           </div>
+          <div style="display:flex;align-items:center;">
+            <button class="btn-primary" id="spSaveBtn" style="padding:12px 26px;font-size:14px;white-space:nowrap;">Save Changes</button>
+            <button class="btn-ghost" onclick="openShop(1)" style="padding:12px 22px;font-size:14px;white-space:nowrap;margin-left:8px;">View Live Shop →</button>
+          </div>
+        </div>
 
-          <div class="form-row"><label>Shop name</label><input class="form-input" type="text" placeholder="e.g. ClayAndThyme Studio" value="ClayAndThyme"></div>
-          <div class="form-row"><label>Shop tagline</label><input class="form-input" type="text" placeholder="A one-line description for search results and previews"></div>
-          <div class="form-row"><label>About your shop</label><textarea class="textarea-input" placeholder="Tell buyers who you are, what you make, and what makes your work special…">Hand-thrown ceramics made in Portland, OR. Each piece is one-of-a-kind and food-safe.</textarea></div>
-          <div class="form-row"><label>Shop announcement</label><textarea class="textarea-input" style="min-height:64px;" placeholder="Optional: pin a note to the top of your storefront (sales, delays, etc.)"></textarea></div>
-
-          <h3 style="font-size:16px;margin:24px 0 14px;">Shop Policies</h3>
-          <div class="form-row"><label>Shipping policy</label><textarea class="textarea-input" style="min-height:64px;">Ships within 3–5 business days. All items packed with care and recycled materials.</textarea></div>
-          <div class="form-row"><label>Returns & exchanges</label><textarea class="textarea-input" style="min-height:64px;">Exchanges accepted within 14 days. Contact me before returning any item.</textarea></div>
-          <div class="form-row"><label>Custom orders</label><textarea class="textarea-input" style="min-height:64px;">Love collaborating on custom pieces. Message me with your idea!</textarea></div>
-
-          <button class="btn-primary" onclick="showToast('Shop profile saved ✓')" style="padding:12px 28px;font-size:14px;">Save Profile</button>
+        <div class="sp-editor-grid">
+          <div class="sp-controls" id="spControls"><!-- JS populates: theme, content, sections --></div>
+          <div class="sp-preview-col">
+            <div class="sp-preview-label">Live Preview <span class="sp-preview-tag">updates as you type</span></div>
+            <div class="sp-preview-frame" id="spPreviewFrame"><!-- JS populates: mini storefront render --></div>
+          </div>
         </div>
       </div>
 
@@ -2508,31 +2605,68 @@ function openShop(shopId) {
   const shop = SHOPS.find(s => s.id === shopId);
   if (!shop) return;
   const products = PRODUCTS.filter(p => p.shopId === shopId);
+  const c = shop.customization; // present once the seller has visited the editor
 
-  document.getElementById('shopBanner').style.background = `url('${shop.banner}') center/cover no-repeat`;
-  document.getElementById('shopBanner').style.position = 'relative';
-  document.getElementById('shopBanner').insertAdjacentHTML('afterbegin', '<div style="position:absolute;inset:0;background:rgba(44,24,16,.45);"></div>');
+  const banner = document.getElementById('shopBanner');
+  banner.style.background = `url('${shop.banner}') center/cover no-repeat`;
+  banner.style.position = 'relative';
+  banner.classList.remove('shop-banner--wide', 'shop-banner--minimal');
+  if (c?.layout === 'wide') banner.classList.add('shop-banner--wide');
+  if (c?.layout === 'minimal') banner.classList.add('shop-banner--minimal');
+  if (!banner.querySelector(':scope > .shop-banner-overlay')) {
+    banner.insertAdjacentHTML('afterbegin', '<div class="shop-banner-overlay" style="position:absolute;inset:0;background:rgba(44,24,16,.45);"></div>');
+  }
+  const showTagline = c?.layout !== 'minimal';
   document.getElementById('shopBannerMeta').innerHTML = `
     <div class="shop-banner-avatar" style="overflow:hidden;padding:0;"><img src="${shop.avatar}" alt="${shop.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" loading="lazy"></div>
     <div class="shop-banner-info" style="position:relative;z-index:1;">
       <h1>${shop.name}</h1>
-      <p>${products.length} listings</p>
-      <div class="shop-banner-rating">⭐ ${shop.rating} · ${shop.reviews} reviews</div>
+      ${showTagline ? `<p>${c?.tagline || `${products.length} listings`}</p><div class="shop-banner-rating">⭐ ${shop.rating} · ${shop.reviews} reviews</div>` : ''}
     </div>`;
   document.getElementById('shopBannerMeta').style.position = 'relative';
   document.getElementById('shopBannerMeta').style.zIndex = '1';
 
-  document.getElementById('shopAbout').innerHTML = `
-    <h3>About</h3>
-    <p>${shop.description}</p>`;
+  // Build the customizable sections (About / Policies / Hours / FAQ / Links / Announcement)
+  // in the seller's chosen order, skipping any they've turned off.
+  const sidebar = document.querySelector('.shop-sidebar');
+  let accent = '#C4622D', accentDk = '#A3501F';
+  if (c) {
+    const theme = (typeof SHOP_THEMES !== 'undefined') ? SHOP_THEMES.find(t => t.id === c.theme) : null;
+    if (theme) { accent = theme.accent; accentDk = theme.accentDk; }
+  }
+  document.documentElement.style.setProperty('--shop-accent', accent);
+  document.documentElement.style.setProperty('--shop-accent-dk', accentDk);
 
-  const pol = shop.policies;
-  document.getElementById('shopPolicies').innerHTML = `
-    <h3>Shop Policies</h3>
-    ${pol.shipping ? `<div class="policy-item">📦 <span>${pol.shipping}</span></div>` : ''}
-    ${pol.returns ? `<div class="policy-item">↩️ <span>${pol.returns}</span></div>` : ''}
-    ${pol.custom ? `<div class="policy-item">✏️ <span>${pol.custom}</span></div>` : ''}
-    ${!pol.shipping ? '<div class="policy-item">ℹ️ <span>Contact seller for policy details.</span></div>' : ''}`;
+  const sectionMarkup = (key) => {
+    if (key === 'announcement') return c.announcement ? `<div class="shop-announce-bar" style="background:${accent}22;color:${accentDk}">📣 ${c.announcement}</div>` : '';
+    if (key === 'about') return `<div class="shop-about"><h3>About</h3><p>${shop.description}</p></div>`;
+    if (key === 'policies') {
+      const p = shop.policies;
+      return `<div class="shop-about shop-policies"><h3>Shop Policies</h3>
+        ${p.shipping ? `<div class="policy-item">📦 <span>${p.shipping}</span></div>` : ''}
+        ${p.returns ? `<div class="policy-item">↩️ <span>${p.returns}</span></div>` : ''}
+        ${p.custom ? `<div class="policy-item">✏️ <span>${p.custom}</span></div>` : ''}
+        ${!p.shipping ? '<div class="policy-item">ℹ️ <span>Contact seller for policy details.</span></div>' : ''}</div>`;
+    }
+    if (key === 'hours') return `<div class="shop-about"><h3>Hours</h3>${c.hours.map(h=>`<div class="shop-hours-row"><span>${h.day}</span><span>${h.time}</span></div>`).join('')}</div>`;
+    if (key === 'faq') return `<div class="shop-about"><h3>FAQ</h3>${c.faq.map(f=>`<div class="shop-faq-item"><div class="q">${f.q}</div><div class="a">${f.a}</div></div>`).join('')}</div>`;
+    if (key === 'links') return `<div class="shop-about"><h3>Links</h3><div class="shop-links-row">${c.links.map(l=>`<a class="shop-link-chip" style="background:${accent}22;color:${accentDk}" href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`).join('')}</div></div>`;
+    return '';
+  };
+
+  if (c) {
+    sidebar.innerHTML = c.sections.filter(s => s.enabled).map(s => sectionMarkup(s.key)).join('');
+  } else {
+    // No customization saved yet — fall back to the original default layout.
+    document.getElementById('shopAbout') && (sidebar.innerHTML = `<div class="shop-about" id="shopAbout"><h3>About</h3><p>${shop.description}</p></div><div class="shop-about" id="shopPolicies"></div>`);
+    const pol = shop.policies;
+    document.getElementById('shopPolicies').innerHTML = `
+      <h3>Shop Policies</h3>
+      ${pol.shipping ? `<div class="policy-item">📦 <span>${pol.shipping}</span></div>` : ''}
+      ${pol.returns ? `<div class="policy-item">↩️ <span>${pol.returns}</span></div>` : ''}
+      ${pol.custom ? `<div class="policy-item">✏️ <span>${pol.custom}</span></div>` : ''}
+      ${!pol.shipping ? '<div class="policy-item">ℹ️ <span>Contact seller for policy details.</span></div>' : ''}`;
+  }
 
   document.getElementById('shopListingsTitle').textContent = `${products.length} Listings from ${shop.name}`;
   renderProductGrid('shopGrid', products);

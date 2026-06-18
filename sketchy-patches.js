@@ -343,37 +343,336 @@ window._skDeleteListing = function (id) {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   4. SHOP PROFILE — REAL SAVE + RESTORE, AND "FORGOT PASSWORD?"
+   4. SHOP PROFILE — FULL CUSTOMIZATION EDITOR
+   ─────────────────────────────────────────────────────────────────────────
+   Adds: theme color picker, banner layout style, reorderable/toggleable
+   sections (About, Announcement, Policies, FAQ, Hours, Links), and a live
+   preview pane. Persists in-memory for the session (SHOPS[i].customization)
+   so it matches the rest of the app's demo data — no localStorage.
 ═══════════════════════════════════════════════════════════════════════════ */
 
-(function wireShopProfile() {
-  const panel = document.getElementById('dash-shop-profile');
-  if (!panel) return;
+const SHOP_THEMES = [
+  { id:'sienna', label:'Sienna',  accent:'#C4622D', accentDk:'#A3501F' },
+  { id:'sage',   label:'Sage',    accent:'#7B9B8A', accentDk:'#5E8170' },
+  { id:'plum',   label:'Plum',    accent:'#8B5E83', accentDk:'#6E4768' },
+  { id:'ocean',  label:'Ocean',   accent:'#3E7C9C', accentDk:'#2F617B' },
+  { id:'mustard',label:'Mustard', accent:'#C99A2E', accentDk:'#A87E1E' },
+  { id:'ink',    label:'Ink',     accent:'#2C1810', accentDk:'#1A1209' },
+];
 
-  const inputs = panel.querySelectorAll('input.form-input, textarea.textarea-input');
-  // Order in the DOM: [0] shop name, [1] tagline, [2] about, [3] announcement,
-  // [4] shipping policy, [5] returns, [6] custom orders
-  const fieldKeys = ['shopName','tagline','about','announcement','shippingPolicy','returns','customOrders'];
+const SHOP_LAYOUTS = [
+  { id:'classic', label:'Classic',  desc:'Sidebar + grid' },
+  { id:'wide',     label:'Wide Banner', desc:'Hero-style banner' },
+  { id:'minimal',  label:'Minimal', desc:'Compact, no sidebar art' },
+];
 
-  // Restore saved values on load (falls back to the HTML defaults already there)
-  const saved = lsGet('sk_shop_profile', null);
-  if (saved) {
-    inputs.forEach((el, i) => {
-      const key = fieldKeys[i];
-      if (key && saved[key] !== undefined) el.value = saved[key];
+const DEFAULT_SECTIONS = [
+  { key:'announcement', icon:'📣', name:'Announcement', enabled:true },
+  { key:'about',        icon:'📝', name:'About',        enabled:true },
+  { key:'policies',     icon:'📦', name:'Policies',      enabled:true },
+  { key:'hours',        icon:'🕒', name:'Hours',         enabled:false },
+  { key:'faq',          icon:'❓', name:'FAQ',           enabled:false },
+  { key:'links',        icon:'🔗', name:'Links',         enabled:false },
+];
+
+function getShopCustomization(shop) {
+  if (!shop.customization) {
+    shop.customization = {
+      theme: 'sienna',
+      layout: 'classic',
+      tagline: '',
+      announcement: '',
+      sections: DEFAULT_SECTIONS.map(s => ({ ...s })),
+      hours: [{ day:'Mon–Fri', time:'9am – 5pm' }],
+      faq: [{ q:'Do you ship internationally?', a:'Yes, message me for a rate quote.' }],
+      links: [{ label:'Instagram', url:'#' }],
+    };
+  }
+  return shop.customization;
+}
+
+(function wireShopProfileEditor() {
+  const controlsEl = document.getElementById('spControls');
+  const previewEl = document.getElementById('spPreviewFrame');
+  const saveBtn = document.getElementById('spSaveBtn');
+  if (!controlsEl || !previewEl || !saveBtn) return;
+
+  // Editor always works on the logged-in seller's shop — shop #1 in this demo.
+  const shop = SHOPS[0];
+  const c = getShopCustomization(shop);
+
+  function themeOf(id) { return SHOP_THEMES.find(t => t.id === id) || SHOP_THEMES[0]; }
+
+  function renderControls() {
+    controlsEl.innerHTML = `
+      <div class="sp-block">
+        <h3>🎨 Theme Color</h3>
+        <p class="sp-block-sub">Sets your storefront's accent color across buttons, links, and badges.</p>
+        <div class="sp-theme-row">
+          ${SHOP_THEMES.map(t => `
+            <div class="sp-theme-item">
+              <div class="sp-swatch ${c.theme===t.id?'active':''}" style="background:${t.accent}" data-theme="${t.id}"></div>
+              <div class="sp-swatch-label">${t.label}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="sp-block">
+        <h3>🖼 Banner Image</h3>
+        <p class="sp-block-sub">Recommended: 1200×300px. Upload a file or paste an image URL.</p>
+        <div class="img-upload-zone" id="spBannerUpload" style="background-image:url('${shop.banner}');background-size:cover;background-position:center;">
+          <input type="file" id="spBannerFile" accept="image/*" style="display:none;">
+          <div class="sp-banner-overlay">
+            <div class="up-icon">🖼</div>
+            <p><strong>Click to upload a new banner</strong></p>
+          </div>
+        </div>
+        <div class="form-row" style="margin-top:12px;"><label>...or paste an image URL</label><input class="form-input" id="spBannerUrl" type="text" placeholder="https://…" value="${shop.banner.startsWith('data:')?'':esc(shop.banner)}"></div>
+      </div>
+
+      <div class="sp-block">
+        <h3>📐 Banner Style</h3>
+        <p class="sp-block-sub">Choose how your storefront header is laid out.</p>
+        <div class="sp-layout-row">
+          ${SHOP_LAYOUTS.map(l => `
+            <div class="sp-layout-card ${c.layout===l.id?'active':''}" data-layout="${l.id}">
+              <div class="lc-preview"></div>
+              <span>${l.label}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="sp-block">
+        <h3>✏️ Basics</h3>
+        <div class="form-row"><label>Shop name</label><input class="form-input" id="spName" type="text" value="${esc(shop.name)}"></div>
+        <div class="form-row"><label>Shop tagline</label><input class="form-input" id="spTagline" type="text" placeholder="A one-line description for search results" value="${esc(c.tagline)}"></div>
+        <div class="form-row"><label>About your shop</label><textarea class="textarea-input" id="spAbout">${esc(shop.description)}</textarea></div>
+      </div>
+
+      <div class="sp-block">
+        <h3>🧩 Page Sections</h3>
+        <p class="sp-block-sub">Toggle sections on/off and reorder them with the arrows — your preview updates live.</p>
+        <div class="sp-section-list" id="spSectionList"></div>
+      </div>
+
+      <div class="sp-block" id="spDynamicSections"><!-- content editors for enabled sections beyond basics --></div>
+
+      <div class="sp-block">
+        <h3>📦 Shop Policies</h3>
+        <div class="form-row"><label>Shipping policy</label><textarea class="textarea-input" id="spShipping" style="min-height:60px;">${esc(shop.policies.shipping||'')}</textarea></div>
+        <div class="form-row"><label>Returns & exchanges</label><textarea class="textarea-input" id="spReturns" style="min-height:60px;">${esc(shop.policies.returns||'')}</textarea></div>
+        <div class="form-row"><label>Custom orders</label><textarea class="textarea-input" id="spCustom" style="min-height:60px;">${esc(shop.policies.custom||'')}</textarea></div>
+      </div>
+    `;
+    renderSectionList();
+    renderDynamicSections();
+    bindControlEvents();
+  }
+
+  function renderSectionList() {
+    const list = document.getElementById('spSectionList');
+    if (!list) return;
+    list.innerHTML = c.sections.map((s, i) => `
+      <div class="sp-section-item ${s.enabled?'':'disabled'}" data-key="${s.key}">
+        <span class="sp-drag-handle">⠿</span>
+        <span class="sec-icon">${s.icon}</span>
+        <span class="sec-name">${s.name}</span>
+        <div class="sec-move">
+          <button class="sp-mini-btn" data-act="up" data-i="${i}" ${i===0?'disabled':''}>↑</button>
+          <button class="sp-mini-btn" data-act="down" data-i="${i}" ${i===c.sections.length-1?'disabled':''}>↓</button>
+        </div>
+        <div class="sp-toggle ${s.enabled?'on':''}" data-act="toggle" data-i="${i}"></div>
+      </div>
+    `).join('');
+    list.querySelectorAll('[data-act]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = +btn.dataset.i;
+        if (btn.dataset.act === 'toggle') c.sections[i].enabled = !c.sections[i].enabled;
+        if (btn.dataset.act === 'up' && i > 0) [c.sections[i-1], c.sections[i]] = [c.sections[i], c.sections[i-1]];
+        if (btn.dataset.act === 'down' && i < c.sections.length-1) [c.sections[i+1], c.sections[i]] = [c.sections[i], c.sections[i+1]];
+        renderSectionList();
+        renderDynamicSections();
+        renderPreview();
+      });
     });
   }
 
-  const saveBtn = [...panel.querySelectorAll('button')].find(b => b.textContent.trim() === 'Save Profile');
-  if (saveBtn) {
-    saveBtn.removeAttribute('onclick');
-    saveBtn.addEventListener('click', () => {
-      const data = {};
-      inputs.forEach((el, i) => { if (fieldKeys[i]) data[fieldKeys[i]] = el.value; });
-      lsSet('sk_shop_profile', data);
-      showToast('Shop profile saved ✓');
+  function renderDynamicSections() {
+    const el = document.getElementById('spDynamicSections');
+    if (!el) return;
+    const blocks = [];
+
+    const announceSec = c.sections.find(s => s.key === 'announcement');
+    if (announceSec?.enabled) {
+      blocks.push(`<h3>📣 Announcement</h3><p class="sp-block-sub">Pinned at the top of your storefront.</p>
+        <div class="form-row"><textarea class="textarea-input" id="spAnnounce" style="min-height:50px;" placeholder="e.g. 20% off through Sunday!">${esc(c.announcement)}</textarea></div>`);
+    }
+    const hoursSec = c.sections.find(s => s.key === 'hours');
+    if (hoursSec?.enabled) {
+      blocks.push(`<h3>🕒 Studio Hours</h3>
+        <div id="spHoursRows">${c.hours.map((h,i)=>`
+          <div class="sp-hours-row">
+            <input class="form-input" data-hours-i="${i}" data-hours-f="day" value="${esc(h.day)}" placeholder="Days">
+            <input class="form-input" data-hours-i="${i}" data-hours-f="time" value="${esc(h.time)}" placeholder="Hours">
+            <button class="sp-remove-btn" data-hours-rm="${i}">✕</button>
+          </div>`).join('')}</div>
+        <div class="sp-add-row-btn" id="spAddHours">+ Add row</div>`);
+    }
+    const faqSec = c.sections.find(s => s.key === 'faq');
+    if (faqSec?.enabled) {
+      blocks.push(`<h3>❓ FAQ</h3>
+        <div id="spFaqRows">${c.faq.map((f,i)=>`
+          <div class="sp-faq-row">
+            <input class="form-input" data-faq-i="${i}" data-faq-f="q" value="${esc(f.q)}" placeholder="Question">
+            <input class="form-input" data-faq-i="${i}" data-faq-f="a" value="${esc(f.a)}" placeholder="Answer">
+            <button class="sp-remove-btn" data-faq-rm="${i}">✕</button>
+          </div>`).join('')}</div>
+        <div class="sp-add-row-btn" id="spAddFaq">+ Add question</div>`);
+    }
+    const linksSec = c.sections.find(s => s.key === 'links');
+    if (linksSec?.enabled) {
+      blocks.push(`<h3>🔗 Links</h3>
+        <div id="spLinkRows">${c.links.map((l,i)=>`
+          <div class="sp-link-row">
+            <input class="form-input" data-link-i="${i}" data-link-f="label" value="${esc(l.label)}" placeholder="Label">
+            <input class="form-input" data-link-i="${i}" data-link-f="url" value="${esc(l.url)}" placeholder="https://…">
+            <button class="sp-remove-btn" data-link-rm="${i}">✕</button>
+          </div>`).join('')}</div>
+        <div class="sp-add-row-btn" id="spAddLink">+ Add link</div>`);
+    }
+
+    el.style.display = blocks.length ? '' : 'none';
+    el.innerHTML = blocks.join('<div style="height:18px"></div>');
+    bindDynamicEvents();
+  }
+
+  function bindDynamicEvents() {
+    document.getElementById('spAnnounce')?.addEventListener('input', e => { c.announcement = e.target.value; renderPreview(); });
+
+    el_each('[data-hours-i]', el => el.addEventListener('input', () => {
+      c.hours[+el.dataset.hoursI][el.dataset.hoursF] = el.value; renderPreview();
+    }));
+    document.getElementById('spAddHours')?.addEventListener('click', () => { c.hours.push({day:'',time:''}); renderDynamicSections(); renderPreview(); });
+    el_each('[data-hours-rm]', el => el.addEventListener('click', () => { c.hours.splice(+el.dataset.hoursRm,1); renderDynamicSections(); renderPreview(); }));
+
+    el_each('[data-faq-i]', el => el.addEventListener('input', () => {
+      c.faq[+el.dataset.faqI][el.dataset.faqF] = el.value; renderPreview();
+    }));
+    document.getElementById('spAddFaq')?.addEventListener('click', () => { c.faq.push({q:'',a:''}); renderDynamicSections(); renderPreview(); });
+    el_each('[data-faq-rm]', el => el.addEventListener('click', () => { c.faq.splice(+el.dataset.faqRm,1); renderDynamicSections(); renderPreview(); }));
+
+    el_each('[data-link-i]', el => el.addEventListener('input', () => {
+      c.links[+el.dataset.linkI][el.dataset.linkF] = el.value; renderPreview();
+    }));
+    document.getElementById('spAddLink')?.addEventListener('click', () => { c.links.push({label:'',url:''}); renderDynamicSections(); renderPreview(); });
+    el_each('[data-link-rm]', el => el.addEventListener('click', () => { c.links.splice(+el.dataset.linkRm,1); renderDynamicSections(); renderPreview(); }));
+  }
+
+  function el_each(sel, fn) { document.querySelectorAll(sel).forEach(fn); }
+
+  function bindControlEvents() {
+    document.querySelectorAll('.sp-swatch').forEach(sw => sw.addEventListener('click', () => {
+      c.theme = sw.dataset.theme;
+      document.querySelectorAll('.sp-swatch').forEach(s => s.classList.toggle('active', s.dataset.theme === c.theme));
+      renderPreview();
+    }));
+    document.querySelectorAll('.sp-layout-card').forEach(card => card.addEventListener('click', () => {
+      c.layout = card.dataset.layout;
+      document.querySelectorAll('.sp-layout-card').forEach(s => s.classList.toggle('active', s.dataset.layout === c.layout));
+      renderPreview();
+    }));
+    document.getElementById('spName')?.addEventListener('input', e => { shop.name = e.target.value; renderPreview(); });
+    document.getElementById('spTagline')?.addEventListener('input', e => { c.tagline = e.target.value; renderPreview(); });
+    document.getElementById('spAbout')?.addEventListener('input', e => { shop.description = e.target.value; renderPreview(); });
+    document.getElementById('spShipping')?.addEventListener('input', e => { shop.policies.shipping = e.target.value; renderPreview(); });
+    document.getElementById('spReturns')?.addEventListener('input', e => { shop.policies.returns = e.target.value; renderPreview(); });
+    document.getElementById('spCustom')?.addEventListener('input', e => { shop.policies.custom = e.target.value; renderPreview(); });
+
+    const bannerZone = document.getElementById('spBannerUpload');
+    const bannerFile = document.getElementById('spBannerFile');
+    const bannerUrl = document.getElementById('spBannerUrl');
+    bannerZone?.addEventListener('click', () => bannerFile.click());
+    bannerFile?.addEventListener('change', () => {
+      const file = bannerFile.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        shop.banner = reader.result;
+        bannerZone.style.backgroundImage = `url('${shop.banner}')`;
+        bannerUrl.value = '';
+        renderPreview();
+        showToast('Banner image updated ✓');
+      };
+      reader.readAsDataURL(file);
+    });
+    bannerUrl?.addEventListener('input', e => {
+      const url = e.target.value.trim();
+      if (!url) return;
+      shop.banner = url;
+      bannerZone.style.backgroundImage = `url('${url}')`;
+      renderPreview();
     });
   }
+
+  function esc(s) { return (s||'').replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
+
+  function sectionHTML(key) {
+    if (key === 'announcement') {
+      if (!c.announcement) return '';
+      const t = themeOf(c.theme);
+      return `<div class="shop-announce-bar" style="background:${t.accent}22;color:${t.accentDk}">📣 ${esc(c.announcement)}</div>`;
+    }
+    if (key === 'about') {
+      return `<div class="sp-pv-section"><h5>About</h5><p>${esc(shop.description)||'<em style="color:var(--muted)">No description yet</em>'}</p></div>`;
+    }
+    if (key === 'policies') {
+      const p = shop.policies;
+      return `<div class="sp-pv-section"><h5>Policies</h5>
+        ${p.shipping?`<div>📦 ${esc(p.shipping)}</div>`:''}
+        ${p.returns?`<div>↩️ ${esc(p.returns)}</div>`:''}
+        ${p.custom?`<div>✏️ ${esc(p.custom)}</div>`:''}</div>`;
+    }
+    if (key === 'hours') {
+      return `<div class="sp-pv-section"><h5>Hours</h5>${c.hours.map(h=>`<div>${esc(h.day)}: ${esc(h.time)}</div>`).join('')}</div>`;
+    }
+    if (key === 'faq') {
+      return `<div class="sp-pv-section"><h5>FAQ</h5>${c.faq.map(f=>`<div class="sp-pv-faq-q">${esc(f.q)}</div><div>${esc(f.a)}</div>`).join('')}</div>`;
+    }
+    if (key === 'links') {
+      const t = themeOf(c.theme);
+      return `<div class="sp-pv-section"><h5>Links</h5>${c.links.map(l=>`<a class="sp-pv-link" style="background:${t.accent}22;color:${t.accentDk}" href="${esc(l.url)}" onclick="return false">${esc(l.label)}</a>`).join('')}</div>`;
+    }
+    return '';
+  }
+
+  function renderPreview() {
+    const t = themeOf(c.theme);
+    const enabledSections = c.sections.filter(s => s.enabled).map(s => sectionHTML(s.key)).filter(Boolean);
+    const layoutClass = `sp-pv-banner--${c.layout}`;
+    const showTagline = c.layout !== 'minimal';
+    previewEl.innerHTML = `
+      <div class="sp-pv-banner ${layoutClass}" style="background-image:url('${shop.banner}')">
+        <div class="sp-pv-meta">
+          <img class="sp-pv-avatar" src="${shop.avatar}" alt="">
+          <div>
+            <h4>${esc(shop.name)}</h4>
+            ${showTagline ? `<p>${esc(c.tagline) || `⭐ ${shop.rating} · ${shop.reviews} reviews`}</p>` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="sp-pv-body">
+        ${enabledSections.length ? enabledSections.join('') : '<div class="sp-pv-empty">Turn on a section to see it here</div>'}
+      </div>
+    `;
+    previewEl.style.borderTop = `4px solid ${t.accent}`;
+  }
+
+  saveBtn.addEventListener('click', () => {
+    showToast(`Shop profile saved ✓ — visit "View Shop" to see it live`);
+  });
+
+  renderControls();
+  renderPreview();
 })();
 
 // ── "Forgot password?" — currently a plain <a> with no onclick at all ──────
