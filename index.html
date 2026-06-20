@@ -2140,6 +2140,7 @@
     <nav class="dash-nav">
       <h3>My Account</h3>
       <div class="dash-nav-item active" onclick="showBuyerPanel('orders',this)"><span>📦</span> Purchases</div>
+      <div class="dash-nav-item" onclick="showBuyerPanel('receipts',this)"><span>🧾</span> Receipts</div>
       <div class="dash-nav-item" onclick="showBuyerPanel('favorites',this)"><span>❤️</span> Favorites</div>
       <div class="dash-nav-item" onclick="showBuyerPanel('reviews',this)"><span>⭐</span> Reviews to Leave</div>
       <div class="dash-nav-item" onclick="showBuyerPanel('messages',this)"><span>💬</span> Messages</div>
@@ -2154,6 +2155,16 @@
             <tbody id="buyerOrdersTable"></tbody>
           </table>
         </div>
+      </div>
+      <div class="dash-panel" id="buyer-receipts">
+        <h2 style="font-size:22px;margin-bottom:20px;">Receipts</h2>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>Receipt</th><th>Order</th><th>Amount</th><th>Date</th><th></th></tr></thead>
+            <tbody id="buyerReceiptsTable"></tbody>
+          </table>
+        </div>
+        <p style="margin-top:14px;color:var(--muted);font-size:14px;">Download receipts for your completed purchases.</p>
       </div>
       <div class="dash-panel" id="buyer-favorites">
         <h2 style="font-size:22px;margin-bottom:20px;">Saved Items</h2>
@@ -3348,6 +3359,7 @@ function showBuyerPanel(name, el) {
   document.querySelectorAll('#view-buyer-dashboard .dash-nav-item').forEach(i => i.classList.remove('active'));
   if (el) el.classList.add('active');
   if (name === 'orders') renderBuyerOrders();
+  if (name === 'receipts') renderBuyerReceipts();
   if (name === 'favorites') renderBuyerFavorites();
 }
 
@@ -3367,6 +3379,24 @@ function renderBuyerOrders() {
       <td><span class="status-pill ${o.status.toLowerCase()}">${o.status}</span></td>
       <td style="color:var(--muted);">${o.date}</td>
       <td><button onclick="showToast('Tracking info coming soon 📦')" style="background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;color:var(--bark);">Track</button></td>
+    </tr>`).join('');
+}
+
+function renderBuyerReceipts() {
+  const tbody = document.getElementById('buyerReceiptsTable');
+  if (!tbody) return;
+  const receipts = [
+    { receipt:'#R1084', order:'#8042', amount:'$38.00', date:'Jun 8' },
+    { receipt:'#R1097', order:'#7965', amount:'$62.00', date:'May 20' },
+    { receipt:'#R1091', order:'#7901', amount:'$58.00', date:'May 10' }
+  ];
+  tbody.innerHTML = receipts.map(r => `
+    <tr>
+      <td style="font-weight:600;color:var(--sienna);">${r.receipt}</td>
+      <td>${r.order}</td>
+      <td style="font-weight:600;">${r.amount}</td>
+      <td style="color:var(--muted);">${r.date}</td>
+      <td><button onclick="showToast('Receipt ${r.receipt} downloaded 📄')" style="background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;color:var(--bark);">Download</button></td>
     </tr>`).join('');
 }
 

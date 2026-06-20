@@ -21,15 +21,18 @@ This is a Minimum Viable Product (MVP) backend for an Etsy-like marketplace, bui
 
 ### 1. Prerequisites
 - Node.js (v16 or higher)
-- PostgreSQL database
 
 ### 2. Setup Environment
-Create a `.env` file in the root directory (or update the existing one) with the following:
+Create a `.env` file in the root directory (or copy `.env.example`) and update values as needed.
+
+By default the app uses a local SQLite file database for development and CI:
 ```env
-DATABASE_URL="postgresql://user:password@localhost:5432/etsy_mvp?schema=public"
+DATABASE_URL="file:./dev.db"
 PORT=3000
 JWT_SECRET="your-super-secret-key"
 ```
+
+If you want to use PostgreSQL instead, set `DATABASE_URL` to your Postgres connection string.
 
 ### 3. Install Dependencies
 ```bash

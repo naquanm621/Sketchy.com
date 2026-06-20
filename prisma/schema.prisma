@@ -6,26 +6,16 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  BUYER
-  SELLER
-}
-
-enum OrderStatus {
-  PENDING
-  COMPLETED
-  CANCELLED
-}
 
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String
-  role      Role     @default(BUYER)
+  role      String   @default("BUYER")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -48,7 +38,7 @@ model Product {
   id          String   @id @default(uuid())
   name        String
   description String?
-  price       Decimal  @db.Decimal(10, 2)
+  price       Decimal
   stock       Int      @default(0)
   imageUrl    String?
   shopId      String
@@ -62,9 +52,9 @@ model Order {
   id        String      @id @default(uuid())
   buyerId   String
   buyer     User        @relation(fields: [buyerId], references: [id])
-  status    OrderStatus @default(PENDING)
+  status    String      @default("PENDING")
   items     OrderItem[]
-  total     Decimal     @db.Decimal(10, 2)
+  total     Decimal
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 }
@@ -76,5 +66,5 @@ model OrderItem {
   productId       String
   product         Product @relation(fields: [productId], references: [id])
   quantity        Int
-  priceAtPurchase Decimal @db.Decimal(10, 2)
+  priceAtPurchase Decimal
 }
